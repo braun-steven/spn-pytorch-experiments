@@ -1,5 +1,9 @@
 import time
 
+import sys
+import traceback
+
+sys.path.insert(0, "./")
 from src.utils.args import parse_args
 from torchsummary import summary
 import argparse
@@ -88,7 +92,6 @@ class SPNNet(nn.Module):
         super(SPNNet, self).__init__()
         self.fc1 = nn.Linear(in_features, 20)
         self.spn1 = SPNLayer(neuron=SPNNeuron, in_features=20, out_features=5)
-        self.bn1 = nn.BatchNorm1d(5)
         self.fc2 = nn.Linear(5, 1)
         for m in self.modules():
             if isinstance(m, nn.Linear):
@@ -102,8 +105,7 @@ class SPNNet(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.spn1(x)
         x = torch.log(-x)
-        x = 1 / x
-        x = self.bn1(x)
+        x = torch.max(x) - x
         x = self.fc2(x)
         return F.sigmoid(x)
 
@@ -181,7 +183,7 @@ def train(model, device, train_loader, optimizer, epoch):
         epoch (int): Current epoch.
     """
     model.train()
-    clipper = SPNClipper()
+    clipper = SPNClipper(device)
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
@@ -249,7 +251,7 @@ def main_datasets(dataset_name, X, y):
         y (np.ndarray): Input labels.
     """
     # torch setup
-    use_cuda = not ARGS.no_cuda and torch.cuda.is_available()
+    use_cuda = ARGS.cuda and torch.cuda.is_available()
     torch.manual_seed(ARGS.seed)
     device = torch.device("cuda" if use_cuda else "cpu")
 
@@ -278,7 +280,6 @@ def main_datasets(dataset_name, X, y):
     train_loader = get_dataloader(X_train, y_train, ARGS.batch_size)
     test_loader = get_dataloader(X_test, y_test, ARGS.test_batch_size)
 
-    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, "min", patience=5, verbose=True)
     # Halven the learning rate after 25 epochs
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=25, gamma=0.5)
 
@@ -295,7 +296,6 @@ def main_datasets(dataset_name, X, y):
         # Evaluate model on train and test data
         train_loss, train_acc = evaluate_model(model, device, train_loader, "Train")
         test_loss, test_acc = evaluate_model(model, device, test_loader, "Test")
-        # scheduler.step(test_loss)
 
         # Store acc/loss
         train_accs.append(train_acc)
@@ -303,12 +303,12 @@ def main_datasets(dataset_name, X, y):
         test_accs.append(test_acc)
         test_losses.append(test_loss)
 
+    # Store results
     column_names = ["train_acc", "test_acc", "train_loss", "test_loss"]
     data = np.c_[train_accs, test_accs, train_losses, test_losses]
     store_results(
-        result_dir=ARGS.result_dir,
+        result_dir=os.path.join(ARGS.result_dir, ARGS.net),
         dataset_name=dataset_name,
-        exp_name=ARGS.net,
         column_names=column_names,
         data=data,
     )

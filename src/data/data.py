@@ -16,4 +16,5 @@ def store_results(result_dir, dataset_name, column_names, data):
     """
     # Write header and content into a csv file
     fname = "./{}/{}.csv".format(result_dir, dataset_name)
+    ensure_dir(os.path.dirname(fname))
     np.savetxt(fname, data, delimiter=",", header=",".join(column_names))

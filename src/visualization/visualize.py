@@ -70,7 +70,7 @@ def plot_accuracies():
                     df["test_acc"],
                     label=exp_name + " test",
                     color=exp_colors[exp_name],
-                    alpha=0.5,
+                    alpha=0.66,
                 )
 
             # Titles
