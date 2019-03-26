@@ -1,7 +1,11 @@
 import argparse
+from src.utils.utils import ensure_dir
 
 
 def parse_args():
+    """
+    Define and parse commandline arguments.
+    """
     # training settings
     parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
     parser.add_argument(
@@ -14,9 +18,8 @@ def parse_args():
     parser.add_argument(
         "--test-batch-size",
         type=int,
-        default=1000,
         metavar="N",
-        help="input batch size for testing (default: 1000)",
+        help="input batch size for testing (default: same as --batch-size)",
     )
     parser.add_argument(
         "--log-level",
@@ -45,17 +48,13 @@ def parse_args():
         help="learning rate (default: 0.01)",
     )
     parser.add_argument(
-        "--momentum",
-        type=float,
-        default=0.5,
-        metavar="M",
-        help="SGD momentum (default: 0.5)",
-    )
-    parser.add_argument(
-        "--no-cuda", action="store_true", default=False, help="disables CUDA training"
+        "--cuda", action="store_true", default=False, help="Enable CUDA training"
     )
     parser.add_argument(
         "--debug", action="store_true", default=False, help="Enable debugging."
+    )
+    parser.add_argument(
+        "--experiment-name", type=str, help="Set the experiment name", required=True
     )
     parser.add_argument(
         "--net",
@@ -106,4 +105,10 @@ def parse_args():
         help="For Saving the current Model",
     )
     args = parser.parse_args()
+    ensure_dir(args.result_dir)
+
+    # If no test batch size was given, use 5 times the train batch size
+    if args.test_batch_size is None:
+        args.test_batch_size = args.batch_size * 5
+
     return args

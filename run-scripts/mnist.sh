@@ -17,11 +17,29 @@
 #      REVISION:  ---
 #===============================================================================
 
-set -o nounset                              # Treat unset variables as an error
+set -e
+
+# Create base directory based on the current time
+base_dir="./results/mnist"
+date_str=`date +"%y-%m-%d_%Hh:%Mm"`
+result_dir="$base_dir/$date_str"
+mkdir -p $result_dir
+
+echo -e "Storing experimental results in ${result_dir}"
+
+# Define variable arguments
 declare -a net=("mlp" "spn")
 
-mkdir logs
-  for n in "${net[@]}"
-  do
-    nohup ./env/bin/python src/models/main_mnist.py --batch-size 64 --lr 0.001 --result-dir ./results/result-mnist --net $n --epochs 150 --no-cuda &
-  done
+# Run all experiments
+for n in "${net[@]}"
+do
+  name="$n"
+  nohup ./env/bin/python src/models/main_mnist.py \
+    --result-dir $result_dir \
+    --batch-size 2048 \
+    --lr 0.001 \
+    --net $n \
+    --epochs 150 \
+    --experiment-name $name \
+    --cuda &
+done

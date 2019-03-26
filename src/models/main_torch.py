@@ -170,6 +170,16 @@ class SPNNeuron(nn.Module):
 
 
 def train(model, device, train_loader, optimizer, epoch):
+    """
+    Train the given model for one epoch.
+
+    Args:
+        model: PyTorch module.
+        device: Execution device.
+        train_loader: Training data loader.
+        optimizer: Training weight optimizer.
+        epoch (int): Current epoch.
+    """
     model.train()
     clipper = SPNClipper()
     for batch_idx, (data, target) in enumerate(train_loader):
@@ -192,7 +202,19 @@ def train(model, device, train_loader, optimizer, epoch):
             )
 
 
-def evaluate_model(model, device, loader, tag) -> float:
+def evaluate_model(model: nn.Module, device, loader, tag) -> float:
+    """
+    Description for method evaluate_model.
+
+    Args:
+        model (nn.Module): PyTorch module.
+        device: Execution device.
+        loader: Data loader.
+        tag (str): Tag for information.
+
+    Returns:
+        float: Tuple of loss and accuracy.
+    """
     model.eval()
     loss = 0
     correct = 0

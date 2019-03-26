@@ -70,6 +70,8 @@ def setup_logging(filename: str = "log.txt", level: str = "INFO"):
         filename: Log file destination.
         level: Log level.
     """
+    # Make sure the directory actually exists
+    ensure_dir(os.path.dirname(filename))
 
     # Check if previous log exists since logging.FileHandler only appends
     if os.path.exists(filename):

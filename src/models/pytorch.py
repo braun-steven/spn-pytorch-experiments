@@ -27,13 +27,14 @@ class SPNClipper(object):
     - Gaussian standard deviation: Assure positivity
     """
 
-    def __init__(self, min_std=0.0001):
+    def __init__(self, device, min_std=0.0001):
         """
         Create a SPNClipper.
         Args:
+            device: Torch device.
             min_std: Minimum for the standard deviation.
         """
-        self.min_std = torch.tensor(min_std)
+        self.min_std = torch.tensor(min_std).to(device)
 
     def __call__(self, module):
         if hasattr(module, "p"):
