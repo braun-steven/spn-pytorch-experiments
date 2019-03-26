@@ -83,34 +83,32 @@ The following figures compare the train and test accuracy of both models after e
 - MLP outperforms SPN regarding test set performance on synth-64-hard (but both models seem to heavily overfit on this dataset)
 - SPN and MLP achieve the same test set performance on synth-8-hard
 
-<p align="center"><img src="./docs/img/Weka_3_full.png" width="600"></p>
 
-
-<p align="center"><img src="./figures/setup-a/synth-64-easy.png" width="600"></p>
-<p align="center"><img src="./figures/setup-a/synth-64-hard.png" width="600"></p>
-<p align="center"><img src="./figures/setup-a/synth-8-easy.png" width="600"></p>
-<p align="center"><img src="./figures/setup-a/synth-8-hard.png" width="600"></p>
+<img src="./figures/setup-a/synth-64-easy.png" width="600">
+<img src="./figures/setup-a/synth-64-hard.png" width="600">
+<img src="./figures/setup-a/synth-8-easy.png" width="600">
+<img src="./figures/setup-a/synth-8-hard.png" width="600">
 
 #### Others
 
-<p align="center"><img src="./figures/setup-a/ionosphere.png" width="600"></p>
-<p align="center"><img src="./figures/setup-a/sonar.png" width="600"></p>
-<p align="center"><img src="./figures/setup-a/wheat-2d.png" width="600"></p>
+<img src="./figures/setup-a/ionosphere.png" width="600">
+<img src="./figures/setup-a/sonar.png" width="600">
+<img src="./figures/setup-a/wheat-2d.png" width="600">
 
 #### Saturated
 
 - These datasets seem to be too "easy" for the models, no real comparison possible
 
-<p align="center"><img src="./figures/setup-a/audit.png" width="600"></p>
-<p align="center"><img src="./figures/setup-a/banknotes.png" width="600"></p>
+<img src="./figures/setup-a/audit.png" width="600">
+<img src="./figures/setup-a/banknotes.png" width="600">
 
 #### Degenerated Runs
 
 - Probably too few training points
 
-<p align="center"><img src="./figures/setup-a/wine-2d.png" width="600"></p>
-<p align="center"><img src="./figures/setup-a/iris-2d.png" width="600"></p>
-<p align="center"><img src="./figures/setup-a/diabetes.png" width="600"></p>
+<img src="./figures/setup-a/wine-2d.png" width="600">
+<img src="./figures/setup-a/iris-2d.png" width="600">
+<img src="./figures/setup-a/diabetes.png" width="600">
 
 
 ### Setup (B)
