@@ -83,31 +83,31 @@ The following figures compare the train and test accuracy of both models after e
 - MLP outperforms SPN regarding test set performance on synth-64-hard (but both models seem to heavily overfit on this dataset)
 - SPN and MLP achieve the same test set performance on synth-8-hard
 
-![](../figures/setup-a/synth-64-easy.png)
-![](../figures/setup-a/synth-64-hard.png)
-![](../figures/setup-a/synth-8-easy.png)
-![](../figures/setup-a/synth-8-hard.png)
+![](./figures/setup-a/synth-64-easy.png)
+![](./figures/setup-a/synth-64-hard.png)
+![](./figures/setup-a/synth-8-easy.png)
+![](./figures/setup-a/synth-8-hard.png)
 
 #### Others
 
-![](../figures/setup-a/ionosphere.png)
-![](../figures/setup-a/sonar.png)
-![](../figures/setup-a/wheat-2d.png)
+![](./figures/setup-a/ionosphere.png)
+![](./figures/setup-a/sonar.png)
+![](./figures/setup-a/wheat-2d.png)
 
 #### Saturated
 
 - These datasets seem to be too "easy" for the models, no real comparison possible
 
-![](../figures/setup-a/audit.png)
-![](../figures/setup-a/banknotes.png)
+![](./figures/setup-a/audit.png)
+![](./figures/setup-a/banknotes.png)
 
 #### Degenerated Runs
 
 - Probably too few training points
 
-![](../figures/setup-a/wine-2d.png)
-![](../figures/setup-a/iris-2d.png)
-![](../figures/setup-a/diabetes.png)
+![](./figures/setup-a/wine-2d.png)
+![](./figures/setup-a/iris-2d.png)
+![](./figures/setup-a/diabetes.png)
 
 
 ### Setup (B)
