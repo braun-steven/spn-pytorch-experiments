@@ -24,39 +24,35 @@ where the _SPN Layer_ (with dimensions *d\_in* and *d\_out*) is defined as follo
 - Each SPN has *d\_in* inputs and is defined as follows:
   - Leaf Layer: Each input is modeled with two Gaussian leaf nodes which makes it two groups
   - Product Layer: 
-    - Setup (A): Each consecutive input x\_i and x\_i+1 are connected via a product node for the two groups in the leaf layer separately
-    - Setup (B): Each input combination x\_i and x\_j are connected via a product node for the two groups in the leaf layer separately
+    - Setup (A): Each input combination x\_i and x\_j are connected via a product node for the two groups in the leaf layer separately
   - Sum Layer: Two product nodes from below with the same scope (that connect the same tuple of input leafs) are connected in a sum node
   - Root Node: Product over all previous sum nodes
 
-### Setup (A) Example
-
-- Connect consecutive inputs
-
-![](./spn-A.png)
-
-### Setup (B) Example
+### SPN Setup Example
 
 - Connect all combinations of inputs
 
-![](./spn-B.png)
+![](./spn.png)
 
 ## Datasets
 
 The models above are evaluated on the following datasets (binary classification):
 
-- iris-2d
-- wine-2d
-- diabetes
-- audit
-- banknotes
-- ionosphere
-- sonar
-- wheat-2d
-- synth-8-easy
-- synth-64-easy
-- synth-8-hard
-- synth-64-hard
+
+| Name | Samples | Features|
+|------|---------|---------|
+| iris-2d | 100| 4 |
+| wine-2d| 107| 13 |
+| diabetes| 768| 8 |
+| audit| 773| 25 |
+| banknotes| 1372| 4 |
+| ionosphere| 351| 34 |
+| sonar| 208| 60 |
+| wheat-2d| 140| 7 |
+| synth-8-easy| 3000| 8 |
+| synth-8-hard| 3000| 8 |
+| synth-64-easy| 3000| 64 |
+| synth-64-hard| 3000| 64 |
 
 See [data_loader](../../src/data/data_loader.py) for the dataset descriptions.
 The synthetic datasets are generated with [sklearn.datasets.make_classification](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.make_classification.html).
@@ -74,43 +70,31 @@ The experimental setup was as follows:
 
 The following figures compare the train and test accuracy of both models after each epoch.
 
-### Setup (A)
 
-#### Most Interesting
+#### Synthetic Data
 
-- MLP and SPN seem to be at least on par
-- SPN outperforms MLP regarding test set performance on synth-64-easy, synth-8-easy
-- MLP outperforms SPN regarding test set performance on synth-64-hard (but both models seem to heavily overfit on this dataset)
-- SPN and MLP achieve the same test set performance on synth-8-hard
-
-
-<img src="./figures/setup-a/synth-64-easy.png" width="600">
-<img src="./figures/setup-a/synth-64-hard.png" width="600">
-<img src="./figures/setup-a/synth-8-easy.png" width="600">
-<img src="./figures/setup-a/synth-8-hard.png" width="600">
+<img src="./figures/synth-64-easy.png" width="600">
+<img src="./figures/synth-64-hard.png" width="600">
+<img src="./figures/synth-8-easy.png" width="600">
+<img src="./figures/synth-8-hard.png" width="600">
 
 #### Others
 
-<img src="./figures/setup-a/ionosphere.png" width="600">
-<img src="./figures/setup-a/sonar.png" width="600">
-<img src="./figures/setup-a/wheat-2d.png" width="600">
+<img src="./figures/ionosphere.png" width="600">
+<img src="./figures/sonar.png" width="600">
+<img src="./figures/wheat-2d.png" width="600">
+<img src="./figures/audit.png" width="600">
+<img src="./figures/iris-2d.png" width="600">
 
 #### Saturated
 
 - These datasets seem to be too "easy" for the models, no real comparison possible
 
-<img src="./figures/setup-a/audit.png" width="600">
-<img src="./figures/setup-a/banknotes.png" width="600">
+<img src="./figures/banknotes.png" width="600">
 
 #### Degenerated Runs
 
 - Probably too few training points
 
-<img src="./figures/setup-a/wine-2d.png" width="600">
-<img src="./figures/setup-a/iris-2d.png" width="600">
-<img src="./figures/setup-a/diabetes.png" width="600">
-
-
-### Setup (B)
-
-Waiting for runs to finish ...
+<img src="./figures/wine-2d.png" width="600">
+<img src="./figures/diabetes.png" width="600">
