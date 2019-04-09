@@ -62,29 +62,29 @@ def plot_accuracies():
                 plt.plot(
                     x,
                     df["train_acc"],
-                    label=exp_name + " train",
+                    label=exp_name.upper() + " Train",
                     color=exp_colors[exp_name],
                 )
                 plt.plot(
                     x,
                     df["test_acc"],
-                    label=exp_name + " test",
+                    label=exp_name.upper() + " Test",
                     color=exp_colors[exp_name],
                     alpha=0.66,
                 )
 
             # Titles
-            title = "{}: Accuracy over Epochs".format(ds_name)
+            title = "{}".format(ds_name).capitalize()
             plt.title(title)
 
             # Y axis
             plt.ylabel("Loss")
             plt.ylabel("Accuracy")
+            plt.ylim((40, 105))
 
             # X axis
-            # plt.set_xlabel("Epochs")
             plt.xlabel("Epochs")
-            plt.legend()
+            plt.legend(loc="lower right")
             plt.savefig(os.path.join(plot_dir, "{}.png".format(ds_name)), dpi=dpi)
         except Exception as e:
             print("Error in Dataset:", ds_name)
@@ -153,8 +153,74 @@ def plot_epoch_loss_acc():
             traceback.print_exc()
 
 
+def plot_fewshot_results():
+    base_dir_acc = os.path.join(args.run)
+    plot_dir = os.path.join(plot_base_dir, "mlp-spn")
+    ensure_dir(plot_dir)
+
+    # Define file name
+    fname_mlp = "{}/{}/mnist.csv".format(base_dir_acc, "mlp")
+    fname_spn = "{}/{}/mnist.csv".format(base_dir_acc, "spn")
+
+    # Load dataframes
+    df_mlp = pd.read_csv(fname_mlp, sep=",", header=0)
+    df_spn = pd.read_csv(fname_spn, sep=",", header=0)
+
+    # Fix columns
+
+    # Plot each df in its own subplot
+    fig = plt.figure()
+    # fig.set_figheight(10)
+    # fig.set_figwidth(15)
+
+    column_names = ["pct", "train_acc", "test_acc", "train_loss", "test_loss"]
+    df_mlp.columns = column_names
+    df_spn.columns = column_names
+
+    # Plot accuracy
+    steps = len(df_spn)
+    # Train
+    plt.plot(
+        df_mlp["pct"].values[:steps],
+        df_mlp["train_acc"].values[:steps],
+        label="Train MLP",
+        color=exp_colors["mlp"],
+        alpha=1.0,
+    )
+    plt.plot(
+        df_spn["pct"],
+        df_spn["train_acc"].values[:steps],
+        label="Train SPN",
+        color=exp_colors["spn"],
+        alpha=1.0,
+    )
+
+    # Test
+    plt.plot(
+        df_mlp["pct"].values[:steps],
+        df_mlp["test_acc"].values[:steps],
+        label="Test MLP",
+        color=exp_colors["mlp"],
+        alpha=0.66,
+    )
+    plt.plot(
+        df_spn["pct"],
+        df_spn["test_acc"].values[:steps],
+        label="Test SPN",
+        color=exp_colors["spn"],
+        alpha=0.66,
+    )
+
+    plt.title("Accuracy vs Pct of Train Data (MNIST)")
+    plt.xlabel("Train Data Percentage")
+    plt.ylabel("Accuracy (%)")
+
+    plt.legend()
+    plt.savefig(os.path.join(plot_dir, "result.png"), dpi=dpi)
+
+
 if __name__ == "__main__":
-    dpi = 120
+    dpi = 160
     NEPOCHS = 300
     ftype = "csv"
     dataset_names = [
@@ -171,15 +237,16 @@ if __name__ == "__main__":
         "synth-64-easy",
         "synth-64-hard",
     ]
-    dataset_size = {}
-    for name, loader in data_loader.load_dataset_map().items():
-        X, y = loader()
-        n = X.shape[0]
-        dataset_size[name] = n
+    # dataset_size = {}
+    # for name, loader in data_loader.load_dataset_map().items():
+    #     X, y = loader()
+    #     n = X.shape[0]
+    #     dataset_size[name] = n
 
     args = parse_args()
     plot_base_dir = os.path.join(args.run, "plots")
 
     # Run plot generation
     # plot_epoch_loss_acc()
-    plot_accuracies()
+    # plot_accuracies()
+    plot_fewshot_results()

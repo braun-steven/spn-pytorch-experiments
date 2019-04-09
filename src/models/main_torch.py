@@ -5,6 +5,7 @@ import traceback
 
 sys.path.insert(0, "./")
 from src.utils.args import parse_args
+from src.utils.utils import set_seed
 from torchsummary import summary
 import argparse
 import logging
@@ -250,9 +251,12 @@ def main_datasets(dataset_name, X, y):
         X (np.ndarray): Input features.
         y (np.ndarray): Input labels.
     """
+
+    # Set seed globally
+    set_seed(ARGS.seed)
+
     # torch setup
     use_cuda = ARGS.cuda and torch.cuda.is_available()
-    torch.manual_seed(ARGS.seed)
     device = torch.device("cuda" if use_cuda else "cpu")
 
     # Create splits
@@ -322,6 +326,14 @@ def main_run_experiment(exp_method):
         exp_method (funtion): Experiment function, which is being called with (datasetname, X, y).
     """
     dss = data_loader.load_dataset_map()
+
+    for ds, loader in dss.items():
+        data = loader()[0]
+        m, n = data.shape
+
+        print("| {}| {}| {} |".format(ds, m, n))
+    exit()
+
     name = ARGS.dataset
     loader = dss[name]
     X, y = loader()
@@ -339,4 +351,5 @@ def main_run_experiment(exp_method):
 
 if __name__ == "__main__":
     ARGS = parse_args()
+    torch.set_num_threads(ARGS.njobs)
     main_run_experiment(main_datasets)

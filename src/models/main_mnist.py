@@ -10,6 +10,7 @@ sys.path.insert(0, "./")
 import logging
 import os
 import time
+import torch
 
 from src.utils.args import parse_args
 from src.utils.utils import ensure_dir, setup_logging, time_delta_now
@@ -31,6 +32,10 @@ def main_mnist():
     tstart = time.time()
 
     try:
+        if not ARGS.cuda:
+            # Set number of CPU threads
+            torch.set_num_threads(ARGS.njobs)
+
         # Create and run experiment
         experiment = MnistExperiment(ARGS)
         experiment.run()

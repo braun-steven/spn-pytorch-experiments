@@ -1,4 +1,6 @@
+import random
 import numpy as np
+import torch
 import time
 import os
 import datetime
@@ -85,3 +87,17 @@ def setup_logging(filename: str = "log.txt", level: str = "INFO"):
             logging.FileHandler(filename=filename),
         ],
     )
+
+
+def set_seed(seed: int):
+    """
+    Set the seed globally for cuda, numpy and torch.
+
+    Args:
+        seed (int): Seed.
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)

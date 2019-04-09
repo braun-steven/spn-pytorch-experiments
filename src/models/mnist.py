@@ -9,6 +9,27 @@ from torch import nn
 logger = logging.getLogger(__name__)
 
 
+def get_n_samples_from_loader(loader) -> int:
+    """
+    Get the number of samples in the data loader.
+    Respects if the data loader has a sampler.
+
+
+    Args:
+        loader: Data loader.
+
+    Returns:
+        int: Number of samples in that data loader.
+    """
+    n_samples = len(loader.dataset)
+
+    # If sampler is set, use the size of the sampler
+    if loader.sampler:
+        n_samples = len(loader.sampler)
+
+    return n_samples
+
+
 def train(model, device, train_loader, optimizer, epoch, log_interval=10):
     """
     Train the model for one epoch.
@@ -22,11 +43,14 @@ def train(model, device, train_loader, optimizer, epoch, log_interval=10):
     """
     model.train()
     clipper = SPNClipper(device)
+
+    n_samples = get_n_samples_from_loader(train_loader)
+
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
-        loss = F.nll_loss(output, target)
+        loss = F.nll_loss(output, target.long())
         loss.backward()
         optimizer.step()
         model.apply(clipper)
@@ -35,7 +59,7 @@ def train(model, device, train_loader, optimizer, epoch, log_interval=10):
                 "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
                     epoch,
                     batch_idx * len(data),
-                    len(train_loader.dataset),
+                    n_samples,
                     100.0 * batch_idx / len(train_loader),
                     loss.item(),
                 )
@@ -65,19 +89,21 @@ def evaluate_model(
             data, target = data.to(device), target.to(device)
             output = model(data)
             loss += F.nll_loss(
-                output, target, reduction="sum"
+                output, target.long(), reduction="sum"
             ).item()  # sum up batch loss
             pred = output.argmax(
                 dim=1, keepdim=True
             )  # get the index of the max log-probability
             correct += pred.long().eq(target.long().view_as(pred)).sum().item()
 
-    loss /= len(loader.dataset)
-    accuracy = 100.0 * correct / len(loader.dataset)
+    n_samples = get_n_samples_from_loader(loader)
+
+    loss /= n_samples
+    accuracy = 100.0 * correct / n_samples
 
     logger.info(
         "{} set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)".format(
-            tag, loss, correct, len(loader.dataset), accuracy
+            tag, loss, correct, n_samples, accuracy
         )
     )
     return (loss, accuracy)

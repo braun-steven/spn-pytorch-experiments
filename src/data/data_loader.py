@@ -227,13 +227,76 @@ def load_dataset_map() -> Dict[str, Callable]:
     return dss
 
 
-def get_mnist_loaders(use_cuda, ARGS):
+def get_mnist_subset(args, use_cuda=False, p=100):
+    """
+    Get MNIST dataset with a certain percentage of samples per class in the train set and the 
+    full test set.
+
+    Args:
+        args: Commandline arguments.
+        use_cuda: Flag to enable cuda.
+        p: Percentage.
+    """
+
+    kwargs = {"num_workers": 1, "pin_memory": True} if use_cuda else {}
+    mnist_train = datasets.MNIST(
+        "../data",
+        train=True,
+        download=True,
+        transform=transforms.Compose(
+            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+        ),
+    )
+
+    max_samples_per_class = p / 100.0 * 60000 / 10
+
+    # Select only p % of each class of the train set
+    counter = [0] * 10
+    data = []
+    targets = []
+
+    for sample in mnist_train:
+        target = sample[1]
+
+        if counter[target] < max_samples_per_class:
+            counter[target] += 1
+            data.append(sample[0])
+            targets.append(target)
+
+    mnist_train = torch.utils.data.TensorDataset(
+        torch.stack(data), torch.Tensor(targets)
+    )
+
+    # Train data loader
+    train_loader = torch.utils.data.DataLoader(
+        mnist_train, batch_size=args.batch_size, shuffle=True, **kwargs
+    )
+
+    # Test data loader
+    test_loader = torch.utils.data.DataLoader(
+        datasets.MNIST(
+            "../data",
+            train=False,
+            transform=transforms.Compose(
+                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+            ),
+        ),
+        batch_size=args.test_batch_size,
+        **kwargs,
+    )
+
+    return train_loader, test_loader
+
+
+def get_mnist_loaders(use_cuda, args, train_sampler=None, test_sampler=None):
     """
     Get the MNIST pytorch data loader.
     
     Args:
         use_cuda: Use cuda flag.
-        ARGS: Arguments.
+        args: Command line arguments.
+        sampler: Dataset sampler.
+
     """
 
     kwargs = {"num_workers": 1, "pin_memory": True} if use_cuda else {}
@@ -248,8 +311,9 @@ def get_mnist_loaders(use_cuda, ARGS):
                 [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
             ),
         ),
-        batch_size=ARGS.batch_size,
-        shuffle=True,
+        batch_size=args.batch_size,
+        shuffle=train_sampler is None,
+        sampler=train_sampler,
         **kwargs,
     )
 
@@ -262,8 +326,9 @@ def get_mnist_loaders(use_cuda, ARGS):
                 [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
             ),
         ),
-        batch_size=ARGS.test_batch_size,
-        shuffle=True,
+        batch_size=args.test_batch_size,
+        shuffle=test_sampler is None,
+        sampler=test_sampler,
         **kwargs,
     )
     return train_loader, test_loader

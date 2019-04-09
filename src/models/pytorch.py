@@ -88,7 +88,7 @@ class ProductNode(nn.Module):
         ch_res = [ch(x) for ch in self.ch_nodes]
         child_probs = torch.stack(ch_res, dim=1)
         res = torch.sum(child_probs, dim=1)
-        return res
+        return res.view(-1)
 
     @classmethod
     def from_spn(cls, node: Product):
@@ -232,9 +232,10 @@ class GaussianNode(nn.Module):
         """
         super(GaussianNode, self).__init__()
         assert scope is not None
-        assert std > 0.0, "Standard deviation must be larger than 0.0 but was " + str(
-            std
-        )
+        if std:
+            assert (
+                std > 0.0
+            ), "Standard deviation must be larger than 0.0 but was " + str(std)
         self.scope = scope
 
         # Generate random mean and std if none were given
@@ -256,6 +257,9 @@ class GaussianNode(nn.Module):
         )
         return res
 
+    def __repr__(self):
+        return str(self)
+
     def __str__(self):
         return "GaussianNode(mean={}, std={}, scope={})".format(
             self.mean.data.item(), self.std.data.item(), self.scope
@@ -275,6 +279,99 @@ class GaussianNode(nn.Module):
 
         torch_node = GaussianNode(mean=node.mean, std=node.stdev, scope=node.scope)
         return torch_node
+
+
+class MultivariateGaussian(nn.Module):
+    """A PyTorch multivariate gaussian node module."""
+
+    def __init__(
+        self, mean=None, covariance_surrogate=None, n_vars=None, scope: List[int] = None
+    ):
+        """
+        Initialize the multivariate gaussiane node.
+
+        Can be either initialized via given mean and covariance matrix or only by giving the number
+        of variables which leads to random initialization.
+
+        The covariance matrix is implicitly learned by learning a surrogate matrix X which constructs
+        the covariance matrix via 0.5*(X + X') + eye(n)*n.
+
+        Args:
+            mean: Vector of means.
+            covariance_surrogate: Covariance matrix surrogate X, that is Cov = XX^T.
+            n_vars: Number of variables to model.
+            scope (List[int]): Node scope over the data variables.
+        """
+        super(MultivariateGaussian, self).__init__()
+        assert scope is not None
+
+        if mean is not None:
+            assert len(scope) == len(mean)
+
+        if n_vars is not None:
+            assert (
+                len(scope) == n_vars
+            ), "The scope has to be equal to the number of variables modeled with the multivariate gaussian."
+            # assert (
+            #     n_vars >= covariance_surrogate_dim
+            # ), "The covariance surrogate dimension must be in 1 <= dim <= n_vars."
+
+        # Check input
+        if not ((n_vars is None) ^ (mean is None)):
+            raise Exception(
+                "Either n_vars or mean and covariance have to be given, but not none or both."
+            )
+
+        if (
+            mean is not None
+            and covariance_surrogate is None
+            or mean is None
+            and covariance_surrogate is not None
+        ):
+            raise Exception(
+                "If mean is given, covariance matrix surrogate is necessary and vice versa."
+            )
+
+        self.scope = scope
+        self.n_vars = n_vars
+
+        # If mean is not set, generate random mean and covariance matrix surrogate
+        if mean is None:
+            mean = np.random.randn(n_vars)
+            covariance_surrogate = np.random.randn(n_vars, n_vars)
+
+        # Save mean and covariance matrix as parameter
+        self.mean = nn.Parameter(torch.Tensor(mean))
+        self.cov_surrogate = nn.Parameter(torch.rand(n_vars, n_vars))
+
+    def forward(self, x):
+        centered_surrogate = self.cov_surrogate - self.cov_surrogate.mean(dim=0)
+
+        # Create a symmetric positive definite matrix
+        # https://math.stackexchange.com/a/358092
+        cov = 0.5 * (centered_surrogate + centered_surrogate.t())
+        # OR: cov = torch.matmul(centered_surrogate, centered_surrogate.t())
+        # since A(i,j) < 1 by construction and a symmetric diagonally dominant matrix
+        #   is symmetric positive definite, which can be ensured by adding nI
+        cov = cov + self.n_vars * torch.eye(self.n_vars)
+
+        mvg = dist.MultivariateNormal(loc=self.mean, covariance_matrix=cov)
+        res = mvg.log_prob(x[:, self.scope])
+
+        assert not torch.isnan(
+            res
+        ).any(), "{} produced NaNs for input: \n{}\noutput: \n{}".format(
+            self, x[:, self.scope], res
+        )
+        return res
+
+    def __str__(self):
+        return "Multinomial(mean={}, covariance_matrix={}, scope={})".format(
+            self.mean.data, self.covariance_matrix.data, self.scope
+        )
+
+    def __repr__(self):
+        return str(self)
 
 
 class SPNLayer(nn.Module):

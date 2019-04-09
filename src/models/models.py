@@ -14,6 +14,7 @@ from src.models.pytorch import SPNLayer
 from src.models.pytorch import GaussianNode
 from src.models.pytorch import ProductNode
 from src.models.pytorch import SumNode
+from src.models.pytorch import MultivariateGaussian
 
 
 class MLPNet(nn.Module):
@@ -60,7 +61,9 @@ class SPNNet(nn.Module):
         super(SPNNet, self).__init__()
         self.fc1 = nn.Linear(in_features, 128)
         self.fc2 = nn.Linear(128, 20)
-        self.spn1 = SPNLayer(neuron=SPNNeuron, in_features=20, out_features=20)
+        self.spn1 = SPNLayer(
+            neuron=RandomSubspaceNeuron, in_features=20, out_features=20
+        )
         self.bn1 = nn.BatchNorm1d(20)
         self.fc3 = nn.Linear(20, 10)
         for m in self.modules():
@@ -92,62 +95,44 @@ class SPNNet(nn.Module):
         return F.log_softmax(x, dim=1)
 
 
-class SPNNeuron(nn.Module):
-    """A PyTorch neuron that implements a full SPN."""
+class TestNode(nn.Module):
+    def __init__(self, in_features, n_mv=2):
+        # Init
+        super(TestNode, self).__init__()
 
-    def __init__(self, in_features: int):
-        """
-        Initialize an SPNNeuron.
+    def forward(self, x):
+        return torch.sum(x, dim=1)
 
-        Args:
-            in_features (int): Number of input features.
-        """
-        super(SPNNeuron, self).__init__()
-        self.in_features = in_features
 
-        # List of gaussians
-        gs0 = []
-        gs1 = []
+class RandomSubspaceNeuron(nn.Module):
+    def __init__(self, in_features, n_mv=2):
+        # Init
+        super(RandomSubspaceNeuron, self).__init__()
 
-        # Generate random means and stdevs
-        means = np.random.randn(in_features, 3)
-        stdevs = np.random.rand(in_features, 3)
+        scopes = torch.randperm(in_features)
+        scopes = np.random.permutation(in_features)
 
-        # Produce two different gaussians for each input
-        for i in range(in_features):
-            g0 = GaussianNode(mean=means[i, 0], std=stdevs[i, 0], scope=i)
-            g1 = GaussianNode(mean=means[i, 1], std=stdevs[i, 1], scope=i)
-
-            # Collect gaussians
-            gs0.append(g0)
-            gs1.append(g1)
-
-        # Collect prod nodes
-        # It holds:
-        # scope(prod0[i]) == scope(prod1[i])
-        prods0 = []
-        prods1 = []
-
-        # Build all first order combinations of gaussians from first group
-        for g_a in gs0:
-            for g_b in gs0:
-                prods0.append(ProductNode(children=[g_a, g_b]))
-
-        # Build all first order combinations of gaussians from second group
-        for g_a in gs1:
-            for g_b in gs1:
-                prods1.append(ProductNode(children=[g_a, g_b]))
-
-        # Collect sum nodes
         sums = []
-        n_sum_nodes = in_features ** 2
-        weights = np.random.rand(n_sum_nodes, 2)
-        weights = weights / weights.sum(axis=1, keepdims=True)
-        for i in range(n_sum_nodes):
-            sum_node = SumNode(weights=weights[i, :], children=[prods0[i], prods1[i]])
-            sums.append(sum_node)
 
-        # Construct root node as product of all sums
+        for i in range(0, in_features, 2):
+            scope_1 = scopes[i]
+            scope_2 = scopes[i + 1]
+
+            # Create n_mv MultivariateGaussian from these two scopes
+            mvs = []
+            for _ in range(n_mv):
+                # mv = MultivariateGaussian(n_vars=2, scope=[scope_1, scope_2])
+                # mvs.append(mv)
+
+                g1 = GaussianNode(scope=scope_1)
+                g2 = GaussianNode(scope=scope_2)
+
+                prod = ProductNode([g1, g2])
+                mvs.append(prod)
+
+            sumnode = SumNode(children=mvs)
+            sums.append(sumnode)
+
         self.root = ProductNode(children=sums)
 
     def forward(self, x):

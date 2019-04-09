@@ -64,6 +64,13 @@ def parse_args():
         required=True,
     )
     parser.add_argument(
+        "--njobs",
+        type=int,
+        default=4,
+        metavar="S",
+        help="Number of threads (default: 4)",
+    )
+    parser.add_argument(
         "--seed", type=int, default=1, metavar="S", help="random seed (default: 1)"
     )
     parser.add_argument(
