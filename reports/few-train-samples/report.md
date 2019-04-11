@@ -6,16 +6,19 @@ This report compares the following two models:
 
 **MLP**: Three layer perceptron
 
-1) Linear Layer (*n\_in*, 20)
-2) Linear Layer (20, 5)
-3) Linear Layer (5, 1)
+1) Linear Layer (*n\_in*, 128)
+2) Linear Layer (128, 20)
+2) Linear Layer (20, 20)
+3) Linear Layer (20, 10)
 
 
 **SPN**: Same as MLP but replace the second linear layer with a custom SPN layer
 
-1) Linear Layer (*n\_in*, 20)
-2) SPN Layer (20, 5)
-3) Linear Layer (5, 1)
+
+1) Linear Layer (*n\_in*, 128)
+2) Linear Layer (128, 20)
+2) SPN Layer (20, 20)
+3) Linear Layer (20, 10)
 
 where the _SPN Layer_ (with dimensions *d\_in* and *d\_out*) is defined as follows:
 
