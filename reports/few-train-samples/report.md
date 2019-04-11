@@ -81,3 +81,24 @@ x = BatchNorm(x)
 ```
 
 <img src="./result-2-bn.png" width="600">
+
+### Stacked SPN #1
+
+Architecture:
+- Linear (768, 32)
+- SPN/Linear (32, 16)
+- SPN/Linear (16, 10)
+- Linear (10, 10)
+
+<img src="./result-stacked.png" width="600">
+
+
+### Stacked SPN (as output layer) #2
+
+Architecture:
+- Linear (768, 128)
+- Linear (128, 20)
+- SPN/Linear (20, 20)
+- SPN/Linear (20, 10)
+
+<img src="./result-stacked-out.png" width="600">
