@@ -7,6 +7,8 @@
 - [Results](#results)
   - [Setup 1: Single SPN Layer](#setup-1)
   - [Setup 2: Stacked SPN Layer](#setup-2)
+  - [Effect of Batch Size](#effect-of-batch-size)
+  - [Effect of Number of Gaussian Independence Combinations](#effect-of-number-of-gaussian-independence-combinations)
 
 ## Dataset
 
@@ -158,3 +160,56 @@ Stacked SPNs
 
 #### N_labels = 10
 <img src="./setup-2/19-04-11_13h:28m-two-layer-128-64-32-nlabel=10/plots/mlp-spn/result.png" width="600">
+
+### Effect of Batch Size
+
+Since the previous setups have shown quite unstable bahviour for some tasks, the following shows results for `n_labels=5` with batch sizes of `16, 32, 64, 128, 256, 512, 1024, 2048`
+
+#### Batch Size 16
+<img src="./diff-batch-sizes/19-04-20_09h:51m-one-layer-32-20-nlabel=5-bs=16/plots/mlp-spn/result.png" width="600">
+
+#### Batch Size 32
+<img src="./diff-batch-sizes/19-04-20_09h:51m-one-layer-32-20-nlabel=5-bs=32/plots/mlp-spn/result.png" width="600">
+
+#### Batch Size 64
+<img src="./diff-batch-sizes/19-04-20_09h:51m-one-layer-32-20-nlabel=5-bs=64/plots/mlp-spn/result.png" width="600">
+
+#### Batch Size 128
+<img src="./diff-batch-sizes/19-04-20_09h:51m-one-layer-32-20-nlabel=5-bs=128/plots/mlp-spn/result.png" width="600">
+
+#### Batch Size 256
+<img src="./diff-batch-sizes/19-04-20_09h:51m-one-layer-32-20-nlabel=5-bs=256/plots/mlp-spn/result.png" width="600">
+
+#### Batch Size 512
+<img src="./diff-batch-sizes/19-04-20_09h:51m-one-layer-32-20-nlabel=5-bs=512/plots/mlp-spn/result.png" width="600">
+
+#### Batch Size 1024
+<img src="./diff-batch-sizes/19-04-20_09h:51m-one-layer-32-20-nlabel=5-bs=1024/plots/mlp-spn/result.png" width="600">
+
+#### Batch Size 2048
+<img src="./diff-batch-sizes/19-04-20_09h:51m-one-layer-32-20-nlabel=5-bs=2048/plots/mlp-spn/result.png" width="600">
+
+
+### Effect of Number of Gaussian Independence Combinations
+
+Another aspect is the number of different number of possible Gaussian independence combinations: 
+
+<img src="./spn.png" width="400">
+
+where `N=2` (number of sum node children).
+
+**Setup**:
+- Architecture from [Setup 1: Single SPN Layer](#setup-1)
+- Batch Size 1024
+- 100 Epochs
+- Initial learning rate of 0.001
+- After 20 epochs, start halvening the learning rate after each 10 epochs
+- MNIST multilabels: `n_labels = 5`
+
+This has been tested for `N in [2, .., 10]` with the following results:
+
+- `N=2` is very unstable
+- `N=3` performs best
+- Increasing `N` leads to decreased performance
+
+<img src="./n-gauss/19-04-22_21h:15m-spn-struct-n-gaussians/plots/spn/result.png" width="1000">
