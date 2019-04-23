@@ -141,11 +141,11 @@ class SumNode(nn.Module):
         # Apply logsumexp
         probs = torch.logsumexp(child_probs + log_weights, dim=1)
 
-        assert not torch.isnan(
-            probs
-        ).any(), "SumNode(weights={}) produced NaNs for input: \n{}\noutput\n{}".format(
-            self.weights.data, child_probs, probs
-        )
+        # assert not torch.isnan(
+        #     probs
+        # ).any(), "SumNode(weights={}) produced NaNs for input: \n{}\noutput\n{}".format(
+        #     self.weights.data, child_probs, probs
+        # )
         return probs
 
     @classmethod
@@ -250,11 +250,11 @@ class GaussianNode(nn.Module):
     def forward(self, x):
         res = self.gauss.log_prob(x[:, self.scope])
 
-        assert not torch.isnan(
-            res
-        ).any(), "GaussianNode(mean={}, std={}, scope={}) produced NaNs for input: \n{}\noutput: \n{}".format(
-            self.mean.data, self.std.data, self.scope, x[:, self.scope], res
-        )
+        # assert not torch.isnan(
+        #     res
+        # ).any(), "GaussianNode(mean={}, std={}, scope={}) produced NaNs for input: \n{}\noutput: \n{}".format(
+        #     self.mean.data, self.std.data, self.scope, x[:, self.scope], res
+        # )
         return res
 
     def __repr__(self):
@@ -358,11 +358,11 @@ class MultivariateGaussian(nn.Module):
         mvg = dist.MultivariateNormal(loc=self.mean, covariance_matrix=cov)
         res = mvg.log_prob(x[:, self.scope])
 
-        assert not torch.isnan(
-            res
-        ).any(), "{} produced NaNs for input: \n{}\noutput: \n{}".format(
-            self, x[:, self.scope], res
-        )
+        # assert not torch.isnan(
+        #     res
+        # ).any(), "{} produced NaNs for input: \n{}\noutput: \n{}".format(
+        #     self, x[:, self.scope], res
+        # )
         return res
 
     def __str__(self):
@@ -392,11 +392,14 @@ class SPNLayer(nn.Module):
         # Create out_features number of SPNNeurons
         neurons = [neuron(in_features) for _ in range(out_features)]
         self.spns = nn.ModuleList(neurons)
+        self.bn = nn.BatchNorm1d(out_features)
 
     def forward(self, x):
         # Feed forward each neuron and stack the results
         spn_results = [spn(x) for spn in self.spns]
-        return torch.stack(spn_results, dim=1)
+        x = torch.stack(spn_results, dim=1)
+        x = self.bn(x)
+        return x
 
 
 def ll_loss(model: nn.Module, data) -> torch.Tensor:

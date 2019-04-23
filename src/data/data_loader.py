@@ -227,13 +227,14 @@ def load_dataset_map() -> Dict[str, Callable]:
     return dss
 
 
-def get_mnist_subset(args, use_cuda=False, p=100):
+def get_mnist_subset(train_bs, test_bs, use_cuda=False, p=100):
     """
     Get MNIST dataset with a certain percentage of samples per class in the train set and the 
     full test set.
 
     Args:
-        args: Commandline arguments.
+        train_bs: Train batch size.
+        test_bs: Test batch size.
         use_cuda: Flag to enable cuda.
         p: Percentage.
     """
@@ -269,7 +270,7 @@ def get_mnist_subset(args, use_cuda=False, p=100):
 
     # Train data loader
     train_loader = torch.utils.data.DataLoader(
-        mnist_train, batch_size=args.batch_size, shuffle=True, **kwargs
+        mnist_train, batch_size=train_bs, shuffle=True, **kwargs
     )
 
     # Test data loader
@@ -281,14 +282,16 @@ def get_mnist_subset(args, use_cuda=False, p=100):
                 [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
             ),
         ),
-        batch_size=args.test_batch_size,
+        batch_size=test_bs,
         **kwargs,
     )
 
     return train_loader, test_loader
 
 
-def get_mnist_loaders(use_cuda, args, train_sampler=None, test_sampler=None):
+def get_mnist_loaders(
+    use_cuda, args, train_sampler=None, test_sampler=None, size=(28, 28)
+):
     """
     Get the MNIST pytorch data loader.
     
@@ -301,16 +304,24 @@ def get_mnist_loaders(use_cuda, args, train_sampler=None, test_sampler=None):
 
     kwargs = {"num_workers": 1, "pin_memory": True} if use_cuda else {}
 
+    if args.debug:
+        train_sampler = torch.utils.data.SubsetRandomSampler(
+            indices=np.random.randint(0, 60000, (args.batch_size))
+        )
+        test_sampler = torch.utils.data.SubsetRandomSampler(
+            indices=np.random.randint(0, 10000, (args.batch_size))
+        )
+
+    transformer = transforms.Compose(
+        [
+            transforms.Resize(size),
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
+        ]
+    )
     # Train data loader
     train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST(
-            "../data",
-            train=True,
-            download=True,
-            transform=transforms.Compose(
-                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-            ),
-        ),
+        datasets.MNIST("../data", train=True, download=True, transform=transformer),
         batch_size=args.batch_size,
         shuffle=train_sampler is None,
         sampler=train_sampler,
@@ -319,16 +330,80 @@ def get_mnist_loaders(use_cuda, args, train_sampler=None, test_sampler=None):
 
     # Test data loader
     test_loader = torch.utils.data.DataLoader(
-        datasets.MNIST(
-            "../data",
-            train=False,
-            transform=transforms.Compose(
-                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-            ),
-        ),
+        datasets.MNIST("../data", train=False, transform=transformer),
         batch_size=args.test_batch_size,
         shuffle=test_sampler is None,
         sampler=test_sampler,
         **kwargs,
     )
+    return train_loader, test_loader
+
+
+def get_multilabel_mnist_loader(n_labels, use_cuda, args, size=(28, 28)):
+    """
+    Get multilabel MNIST pytorch data loader.
+    
+    Args:
+        n_labels (int): Number of labels
+        use_cuda: Use cuda flag.
+        args: Command line arguments.
+        sampler: Dataset sampler.
+    """
+
+    kwargs = {"num_workers": 1, "pin_memory": True} if use_cuda else {}
+
+    transformer = transforms.Compose(
+        [
+            transforms.Resize(size),
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
+        ]
+    )
+
+    # Get datasets
+    mnist_train = datasets.MNIST(
+        "../data", train=True, download=True, transform=transformer
+    )
+    mnist_test = datasets.MNIST("../data", train=False, transform=transformer)
+    # Train data loader
+    train_loader = torch.utils.data.DataLoader(
+        mnist_train, batch_size=1, shuffle=True, **kwargs
+    )
+
+    # Test data loader
+    test_loader = torch.utils.data.DataLoader(
+        mnist_test, batch_size=1, shuffle=True, **kwargs
+    )
+
+    def make_multilabel_loader(loader):
+        loaders = [
+            torch.utils.data.DataLoader(
+                mnist_train, batch_size=1, shuffle=True, **kwargs
+            )
+            for _ in range(n_labels)
+        ]
+
+        tensors_data = []
+        tensors_targets = []
+        for idx, entry in enumerate(zip(*loaders)):
+            data = []
+            targets = []
+            for i in range(n_labels):
+                data.append(entry[i][0])
+                targets.append(entry[i][1])
+
+            tensors_data.append(torch.cat(data, dim=3))
+            tensors_targets.append(torch.cat(targets, dim=0))
+
+            if args.debug and idx > 10:
+                break
+
+        data = torch.cat(tensors_data, dim=0)
+        targets = torch.stack(tensors_targets)
+        dataset = torch.utils.data.TensorDataset(data, targets)
+        loader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size)
+        return loader
+
+    train_loader = make_multilabel_loader(train_loader)
+    test_loader = make_multilabel_loader(test_loader)
     return train_loader, test_loader

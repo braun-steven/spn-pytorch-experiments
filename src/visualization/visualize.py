@@ -178,18 +178,20 @@ def plot_fewshot_results():
     df_spn.columns = column_names
 
     # Plot accuracy
-    steps = len(df_spn)
+    mask_spn = df_spn["pct"] < 2.5
+    mask_mlp = df_mlp["pct"] < 2.5
+
     # Train
     plt.plot(
-        df_mlp["pct"].values[:steps],
-        df_mlp["train_acc"].values[:steps],
+        df_mlp["pct"][mask_mlp],
+        df_mlp["train_acc"][mask_mlp],
         label="Train MLP",
         color=exp_colors["mlp"],
         alpha=1.0,
     )
     plt.plot(
-        df_spn["pct"],
-        df_spn["train_acc"].values[:steps],
+        df_spn["pct"][mask_spn],
+        df_spn["train_acc"][mask_spn],
         label="Train SPN",
         color=exp_colors["spn"],
         alpha=1.0,
@@ -197,15 +199,15 @@ def plot_fewshot_results():
 
     # Test
     plt.plot(
-        df_mlp["pct"].values[:steps],
-        df_mlp["test_acc"].values[:steps],
+        df_mlp["pct"][mask_mlp],
+        df_mlp["test_acc"][mask_mlp],
         label="Test MLP",
         color=exp_colors["mlp"],
         alpha=0.66,
     )
     plt.plot(
-        df_spn["pct"],
-        df_spn["test_acc"].values[:steps],
+        df_spn["pct"][mask_spn],
+        df_spn["test_acc"][mask_spn],
         label="Test SPN",
         color=exp_colors["spn"],
         alpha=0.66,
@@ -214,29 +216,196 @@ def plot_fewshot_results():
     plt.title("Accuracy vs Pct of Train Data (MNIST)")
     plt.xlabel("Train Data Percentage")
     plt.ylabel("Accuracy (%)")
+    plt.ylim((20, 105))
+    plt.xlim((0, 2.6))
 
-    plt.legend()
+    plt.legend(loc="lower right")
     plt.savefig(os.path.join(plot_dir, "result.png"), dpi=dpi)
+
+
+def plot_accs_multiple_percentages():
+    base_dir_acc = os.path.join(args.run)
+    plot_dir = os.path.join(plot_base_dir, "mlp-spn")
+    ensure_dir(plot_dir)
+
+    min_percentage = 0.05  # Equals 3 images per class
+    max_percentage = 2.5
+    percentage_step_size = 0.1
+
+    # Iterate over percentages in  steps
+    rng = np.arange(
+        min_percentage, max_percentage + min_percentage, percentage_step_size
+    )
+    ftype = "csv"
+
+    # For each dataset and each suffix (configuration)
+    for p in rng:
+        fname = "mnist-p={0:.2f}".format(p)
+        # Plot each df in its own subplot
+        fig = plt.figure()
+
+        for exp_name in exp_names:
+
+            # Define file name
+            csv_name = "{}/{}/{}.{}".format(base_dir_acc, exp_name, fname, ftype)
+            # Load dataframes
+            df = pd.read_csv(csv_name, sep=",", header=0)
+            df.columns = ["epochs", "train_acc", "test_acc", "train_loss", "test_loss"]
+
+            NEPOCHS = df.shape[0]
+            x = range(NEPOCHS)
+            plt.plot(
+                x,
+                df["train_acc"],
+                label=exp_name.upper() + " Train",
+                color=exp_colors[exp_name],
+            )
+            plt.plot(
+                x,
+                df["test_acc"],
+                label=exp_name.upper() + " Test",
+                color=exp_colors[exp_name],
+                alpha=0.66,
+            )
+
+        # Titles
+        title = "MLP vs SPN (MNIST: p={:.2f} )".format(p)
+        plt.title(title)
+
+        # Y axis
+        plt.ylabel("Accuracy")
+        plt.ylim((10, 105))
+
+        # X axis
+        plt.xlabel("Epochs")
+        plt.legend(loc="lower right")
+        plt.savefig(os.path.join(plot_dir, "{}.png".format(fname)), dpi=dpi)
+
+
+def plot_accs_mnist_multilabel():
+    base_dir_acc = os.path.join(args.run)
+    plot_dir = os.path.join(plot_base_dir, "mlp-spn")
+    ensure_dir(plot_dir)
+    ftype = "csv"
+
+    # For each dataset and each suffix (configuration)
+    for exp_name in exp_names:
+
+        # Define file name
+        csv_name = "{}/{}/mnist.{}".format(base_dir_acc, exp_name, ftype)
+        # Load dataframes
+        df = pd.read_csv(csv_name, sep=",", header=0)
+        df.columns = ["epochs", "train_acc", "test_acc", "train_loss", "test_loss"]
+
+        NEPOCHS = df.shape[0]
+        x = range(NEPOCHS)
+        plt.plot(
+            x,
+            df["train_acc"],
+            label=exp_name.upper() + " Train",
+            color=exp_colors[exp_name],
+        )
+        plt.plot(
+            x,
+            df["test_acc"],
+            label=exp_name.upper() + " Test",
+            color=exp_colors[exp_name],
+            alpha=0.66,
+        )
+
+    n_labels = args.run.split("nlabel=")[1].replace("/", "")
+
+    # Titles
+    title = "MLP vs SPN ($N_{labels}=%s$)" % n_labels
+    plt.title(title)
+
+    # Y axis
+    plt.ylabel("Accuracy")
+    plt.ylim((10, 105))
+
+    # X axis
+    plt.xlabel("Epochs")
+    plt.legend(loc="lower right")
+    plt.savefig(os.path.join(plot_dir, "result.png"), dpi=dpi)
+
+
+def plot_n_gaussians():
+    base_dir_acc = os.path.join(args.run)
+    plot_dir = os.path.join(plot_base_dir, "spn")
+    ensure_dir(plot_dir)
+    ftype = "csv"
+    # Plot each df in its own subplot
+    fig, axes = plt.subplots(nrows=2, ncols=2)
+    fig.set_figheight(10)
+    fig.set_figwidth(15)
+
+    # For each dataset and each suffix (configuration)
+    for i in range(2, 11):
+        exp_name = "n-gaussians=%s" % i
+
+        # Define file name
+        csv_name = os.path.join(base_dir_acc, exp_name, "mnist.csv")
+        # Load dataframes
+        df = pd.read_csv(csv_name, sep=",", header=0)
+        df.columns = ["epochs", "train_acc", "test_acc", "train_loss", "test_loss"]
+
+        NEPOCHS = df.shape[0]
+        x = range(NEPOCHS)
+
+        # Axes:
+        # 0,0 = Train Loss
+        # 1,0 = Test Loss
+        # 0,1 = Train Accuracy
+        # 1,1 = Test Accuracy
+
+        # Set mins/maxs
+        axes[0, 1].set_ylim(50, 90)
+        axes[1, 1].set_ylim(50, 90)
+        axes[0, 0].set_ylim(1, 4)
+        axes[1, 0].set_ylim(1, 4)
+
+        # Plot loss
+        axes[0, 0].plot(x, df["train_loss"], label="$N=%s$" % i)
+        axes[1, 0].plot(x, df["test_loss"], label="$N=%s$" % i)
+
+        # Plot accuracy
+        axes[0, 1].plot(x, df["train_acc"], label="$N=%s$" % i)
+        axes[1, 1].plot(x, df["test_acc"], label="$N=%s$" % i)
+
+        # Y axis
+        axes[0, 0].set_ylabel("Train Loss")
+        axes[1, 0].set_ylabel("Test Loss")
+        axes[0, 1].set_ylabel("Train Accuracy")
+        axes[1, 1].set_ylabel("Test Accuracy")
+
+        # X axis
+        axes[1, 0].set_xlabel("Epochs")
+        axes[1, 1].set_xlabel("Epochs")
+        title = "MNIST: Loss/Accuracy over Epochs ($N_{labels}=5$)"
+
+    fig.suptitle(title)
+    plt.legend(loc="lower right")
+    plt.savefig(os.path.join(plot_dir, "result.png"), dpi=240)
 
 
 if __name__ == "__main__":
     dpi = 160
-    NEPOCHS = 300
+    NEPOCHS = 100
     ftype = "csv"
-    dataset_names = [
-        "iris-2d",
-        "wine-2d",
-        "diabetes",
-        "audit",
-        "banknotes",
-        "ionosphere",
-        "sonar",
-        "wheat-2d",
-        "synth-8-easy",
-        "synth-8-hard",
-        "synth-64-easy",
-        "synth-64-hard",
-    ]
+    # dataset_names = [
+    #     "iris-2d",
+    #     "wine-2d",
+    #     "diabetes",
+    #     "audit",
+    #     "banknotes",
+    #     "ionosphere",
+    #     "sonar",
+    #     "wheat-2d",
+    #     "synth-8-easy",
+    #     "synth-8-hard",
+    #     "synth-64-easy",
+    #     "synth-64-hard",
+    # ]
     # dataset_size = {}
     # for name, loader in data_loader.load_dataset_map().items():
     #     X, y = loader()
@@ -249,4 +418,7 @@ if __name__ == "__main__":
     # Run plot generation
     # plot_epoch_loss_acc()
     # plot_accuracies()
-    plot_fewshot_results()
+    # plot_fewshot_results()
+    # plot_accs_multiple_percentages()
+    # plot_accs_mnist_multilabel()
+    plot_n_gaussians()

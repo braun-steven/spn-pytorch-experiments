@@ -41,6 +41,13 @@ def parse_args():
         help="number of epochs to train (default: 10)",
     )
     parser.add_argument(
+        "--n-labels",
+        type=int,
+        default=2,
+        metavar="N",
+        help="Number of labels for artificial multilabel mnist task",
+    )
+    parser.add_argument(
         "--lr",
         type=float,
         default=0.01,
@@ -62,6 +69,13 @@ def parse_args():
         choices=["spn", "mlp", "mlplist"],
         help="Define network",
         required=True,
+    )
+    parser.add_argument(
+        "--n-gaussians",
+        type=int,
+        default=2,
+        metavar="N",
+        help="number of possible independence combinations of gaussians",
     )
     parser.add_argument(
         "--njobs",
@@ -117,5 +131,8 @@ def parse_args():
     # If no test batch size was given, use 5 times the train batch size
     if args.test_batch_size is None:
         args.test_batch_size = args.batch_size * 5
+
+    if args.debug:
+        args.epochs = 2
 
     return args

@@ -101,3 +101,28 @@ def set_seed(seed: int):
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+
+
+def make_one_hot(labels, C=10):
+    """
+    Converts an integer label torch.autograd.Variable to a one-hot Variable.
+    
+    Parameters
+    ----------
+    labels : torch.autograd.Variable of torch.cuda.LongTensor
+        N x 1 x H x W, where N is batch size. 
+        Each value is an integer representing correct classification.
+    C : integer. 
+        number of classes in labels.
+    
+    Returns
+    -------
+    target : torch.autograd.Variable of torch.cuda.FloatTensor
+        N x C x H x W, where C is class number. One-hot encoded.
+    """
+    one_hot = torch.FloatTensor(labels.size(0), C, labels.size(2)).zero_()
+    target = one_hot.scatter_(1, labels.data, 1)
+
+    target = torch.Tensor(target)
+
+    return target
