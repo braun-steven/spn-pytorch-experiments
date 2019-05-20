@@ -172,6 +172,8 @@ Architecture:
 
 ### SPN vs MPN (Max Product Network = Maxout Network)
 
+*Idea*: The Maxout neuron from Bengio et al. is similar to the sum node in the forward pass if we consider the maxout `k` dimension as the number of possible representations of a certain scope in the SPN, see:
+
 <div style="text-align: center">
 <img src="./data-tensor.png" width="300">
 </div>
@@ -179,6 +181,8 @@ Architecture:
 <div style="text-align: center">
 <img src="./max-sum.png" width="600">
 </div>
+
+The results below compare the Resnet+SPN setup with the same setup but the sum operation has been replaced with a max operation (as it is done during MPE).
 
 #### Results
 
