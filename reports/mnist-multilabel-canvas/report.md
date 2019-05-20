@@ -1,4 +1,3 @@
-# Report: MLP vs SPN on MNIST Multilabel 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
@@ -32,7 +31,7 @@
 
 
 
-## Dataset
+# Dataset
 
 The dataset has been artificially crafted by randomly drawing digits from MNIST onto a 50x50 canvas. The dataset can be created with two parameters:
 
@@ -43,7 +42,7 @@ The dataset has been artificially crafted by randomly drawing digits from MNIST 
 <img src="./samples/9.png" width="400"><img src="./samples/8.png" width="400">
 
 
-## SPN Architecture
+# SPN Architecture
 
 Each _SPN Layer_ (with dimensions *d\_in* and *d\_out*) is defined as follows:
 
@@ -59,7 +58,7 @@ Example visualization with 6 input variables and a random selection of pairwise 
 
 <img src="./spn.png" width="1200">
 
-## Experiments
+# Experiments
 
 
 The general experimental setup was as follows (if not specified further):
@@ -68,7 +67,7 @@ The general experimental setup was as follows (if not specified further):
 - Batch Size: 128
 - Learning Rate: 0.0001 (decrease by 0.5 after every 10 epochs)
 
-### Resnet vs Resnet + SPN on Increasing Difficulties
+## Resnet vs Resnet + SPN on Increasing Difficulties
 
 **Resnet**
 
@@ -86,36 +85,36 @@ The general experimental setup was as follows (if not specified further):
 | SPN        | 128       | *n_labels*   |
 
 
-#### Results
+### Results
 
-#### N_labels = N_digits = 2
+### N_labels = N_digits = 2
 <img src="./multilabel-2-10-labels/n-digits=2-nlabels=2/plots/result.png" width="1800">
 
-#### N_labels = N_digits = 3
+### N_labels = N_digits = 3
 <img src="./multilabel-2-10-labels/n-digits=3-nlabels=3/plots/result.png" width="1800">
 
-#### N_labels = N_digits = 4
+### N_labels = N_digits = 4
 <img src="./multilabel-2-10-labels/n-digits=4-nlabels=4/plots/result.png" width="1800">
 
-#### N_labels = N_digits = 5
+### N_labels = N_digits = 5
 <img src="./multilabel-2-10-labels/n-digits=5-nlabels=5/plots/result.png" width="1800">
 
-#### N_labels = N_digits = 6
+### N_labels = N_digits = 6
 <img src="./multilabel-2-10-labels/n-digits=6-nlabels=6/plots/result.png" width="1800">
 
-#### N_labels = N_digits = 7
+### N_labels = N_digits = 7
 <img src="./multilabel-2-10-labels/n-digits=7-nlabels=7/plots/result.png" width="1800">
 
-#### N_labels = N_digits = 8
+### N_labels = N_digits = 8
 <img src="./multilabel-2-10-labels/n-digits=8-nlabels=8/plots/result.png" width="1800">
 
-#### N_labels = N_digits = 9
+### N_labels = N_digits = 9
 <img src="./multilabel-2-10-labels/n-digits=9-nlabels=9/plots/result.png" width="1800">
 
-#### N_labels = N_digits = 10
+### N_labels = N_digits = 10
 <img src="./multilabel-2-10-labels/n-digits=10-nlabels=10/plots/result.png" width="1800">
 
-### Resnet vs SPN vs Resnet + SPN vs Resnet & SPN
+## Resnet vs SPN vs Resnet + SPN vs Resnet & SPN
 
 Different Network Architectures:
 
@@ -147,11 +146,11 @@ Different Network Architectures:
 | Concat (Resnet & SPN) | 128 + 128 |          256 |
 | Linear                | 256       |   *n_labels* |
 
-#### Results
+### Results
 
 <img src="./resnet-vs-resnet+spn-vs-parallel/n-digits=10-nlabels=10/plots/result.png" width="1800">
 
-### SPN as Activation Conditionals
+## SPN as Activation Conditionals
 
 Idea: Map each output of a certain layer to the conditional of that output, given all other outputs. 
 
@@ -165,12 +164,12 @@ Architecture:
 | Cond-SPN   | 128       | 128          |
 | Linear     | 128       | *n_labels**   |
 
-#### Results
+### Results
 
 <img src="./cond-spn/plots/result.png" width="1800">
 
 
-### SPN vs MPN (Max Product Network = Maxout Network)
+## SPN vs MPN (Max Product Network = Maxout Network)
 
 *Idea*: The Maxout neuron from Bengio et al. is similar to the sum node in the forward pass if we consider the maxout `k` dimension as the number of possible representations of a certain scope in the SPN, see:
 
@@ -184,17 +183,17 @@ Architecture:
 
 The results below compare the Resnet+SPN setup with the same setup but the sum operation has been replaced with a max operation (as it is done during MPE).
 
-#### Results
+### Results
 
 <img src="./spn-vs-maxout/19-05-19_22h:39m-first-run/plots/result.png" width="1800">
 
-## Issues During the Above Experiments
+# Issues During the Above Experiments
 
-### Model Complexity
+## Model Complexity
 
 The new multilabel MNIST dataset seemes to need quite a more complex/powerful model. Initial experiments were conducted with naive MLPs and some handcrafted Conv>Pool>...>Linear architectures. Each of these performed underwhelmingly bad. Therefore, it was necessary to include more capable architectures, Resnet18 in this case.
 
-### Performance
+## Performance
 
 Due to a higher model complexity the intermediate dimensions have grown. It was not feasable anymore to use a naive implementation of the SPN. Therefore, a vectorized layer-wise SPN implementation in PyTorch was necessary:
 
