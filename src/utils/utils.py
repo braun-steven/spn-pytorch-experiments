@@ -120,7 +120,7 @@ def make_one_hot(labels, C=10):
     target : torch.autograd.Variable of torch.cuda.FloatTensor
         N x C x H x W, where C is class number. One-hot encoded.
     """
-    one_hot = torch.FloatTensor(labels.size(0), C, labels.size(2)).zero_()
+    one_hot = torch.FloatTensor(labels.size(0), C, labels.size(1)).zero_()
     target = one_hot.scatter_(1, labels.data, 1)
 
     target = torch.Tensor(target)

@@ -30,12 +30,18 @@ class MnistExperiment:
         """Run the MNIST experiment."""
         use_cuda = self.args.cuda and torch.cuda.is_available()
         torch.manual_seed(self.args.seed)
-        device = torch.device("cuda" if use_cuda else "cpu")
+        if use_cuda:
+            device = "cuda:%s" % self.args.cuda_device_id
+        else:
+            device = "cpu"
+
+        logger.info("Selected device: {}".format(device))
 
         # Get the mnist loader
         train_loader, test_loader = get_mnist_loaders(use_cuda, self.args)
 
         model = get_model_by_tag(self.args.net, device)
+        logger.info("Model: {}".format(model))
 
         # with SummaryWriter(comment="Model", log_dir="tensorboard") as w:
         #     w.add_graph(model, torch.zeros(1, 28, 28), True)

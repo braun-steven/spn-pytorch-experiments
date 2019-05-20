@@ -37,17 +37,25 @@ class SPNClipper(object):
         self.min_std = torch.tensor(min_std).to(device)
 
     def __call__(self, module):
-        if hasattr(module, "p"):
+        if hasattr(module, "p") and isinstance(module, CategoricalNode):
             p = module.p.data
             p.div_(torch.norm(p, 1, 0))
 
-        if hasattr(module, "std"):
-            std = module.std.data
-            std.set_(torch.max(std, self.min_std))
+        # if hasattr(module, "std") and isinstance(module, GaussianNode):
+        #     std = module.std.data
+        #     std.set_(torch.max(std, self.min_std))
 
-        if hasattr(module, "weights"):
-            weights = module.weights.data
-            weights.set_(torch.softmax(weights, 0))
+        # if hasattr(module, "weights") and isinstance(module, SumNode):
+        #     weights = module.weights.data
+        #     weights.set_(torch.softmax(weights, 0))
+
+        if hasattr(module, "sum_weights"):
+            sum_weights = module.sum_weights.data
+            sum_weights.set_(torch.softmax(sum_weights, dim=0))
+
+        if hasattr(module, "stds"):
+            stds = module.stds.data
+            stds.set_(torch.max(stds, self.min_std))
 
 
 def children_to_torch(node: Node) -> List[nn.Module]:
@@ -67,6 +75,43 @@ def children_to_torch(node: Node) -> List[nn.Module]:
         torch_child = torch_cls.from_spn(ch)
         children.append(torch_child)
     return children
+
+
+class ProductNodeVect(nn.Module):
+    """A PyTorch product node module."""
+
+    def __init__(self, children: List["SumNode"]):
+        """
+        Initialize ProductNode.
+        
+        Args:
+            children (List[SumNode]): Product node children.
+        """
+
+        super(ProductNodeVect, self).__init__()
+        self.ch_nodes = nn.ModuleList(children)
+
+    def forward(self, x):
+        # Product is sum in logspace
+        ch_res = [ch(x) for ch in self.ch_nodes]
+        child_probs = torch.stack(ch_res, dim=1)
+        res = torch.sum(child_probs, dim=1)
+        return res.view(-1)
+
+    @classmethod
+    def from_spn(cls, node: Product):
+        """
+        Translate a SPN product node to a PyTorch product node implementation.
+
+        Args:
+            node (Product): Input product node.
+
+        Returns:
+            ProductNode: PyTorch product node implementation.
+        """
+        children = children_to_torch(node)
+        torch_node = ProductNode(children=children)
+        return torch_node
 
 
 class ProductNode(nn.Module):
@@ -248,6 +293,10 @@ class GaussianNode(nn.Module):
         self.gauss = dist.Normal(loc=self.mean, scale=self.std)
 
     def forward(self, x):
+        # Temporary gauss creation is necessary for multi-gpu usage:
+        # gauss.loc/scale will not be correctly distributed accross the gpu devices
+        # gauss = dist.Normal(loc=self.mean, scale=self.std)
+        # res = gauss.log_prob(x[:, self.scope])
         res = self.gauss.log_prob(x[:, self.scope])
 
         # assert not torch.isnan(

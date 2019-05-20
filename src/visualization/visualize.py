@@ -4,7 +4,7 @@ Plot results.
 import argparse
 import os
 import traceback
-
+from matplotlib.font_manager import FontProperties
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -14,13 +14,7 @@ from src.data import data_loader
 from typing import Dict
 
 from src.utils.utils import ensure_dir
-
-# Apply seaborn default styling
-sns.set()
-sns.set_palette("deep")
-colors = sns.color_palette()
-exp_names = ["mlp", "spn"]
-exp_colors = {"mlp": colors[0], "spn": colors[1]}
+from src.utils.args import load_args
 
 
 def parse_args():
@@ -282,11 +276,84 @@ def plot_accs_multiple_percentages():
         plt.savefig(os.path.join(plot_dir, "{}.png".format(fname)), dpi=dpi)
 
 
-def plot_accs_mnist_multilabel():
+def plot_auc_mnist_multilabel():
     base_dir_acc = os.path.join(args.run)
     plot_dir = os.path.join(plot_base_dir, "mlp-spn")
     ensure_dir(plot_dir)
     ftype = "csv"
+
+    fig, axes = plt.subplots(ncols=2)
+    fig.set_figheight(5)
+    fig.set_figwidth(15)
+
+    # For each dataset and each suffix (configuration)
+    for exp_name in exp_names:
+
+        # Define file name
+        csv_name = "{}/{}/mnist.{}".format(base_dir_acc, exp_name, ftype)
+        # Load dataframes
+        df = pd.read_csv(csv_name, sep=",", header=0)
+        df.columns = ["epochs", "train_auc", "test_auc", "train_loss", "test_loss"]
+
+        NEPOCHS = df.shape[0]
+        x = range(NEPOCHS)
+
+        # Plot accuracy
+        axes[0].plot(
+            x,
+            df["train_auc"],
+            label=exp_name.upper() + " Train",
+            color=exp_colors[exp_name],
+        )
+        axes[0].plot(
+            x,
+            df["test_auc"],
+            label=exp_name.upper() + " Test",
+            color=exp_colors[exp_name],
+            alpha=0.66,
+        )
+
+        # Plot loss
+        axes[1].plot(
+            x,
+            df["train_loss"],
+            label=exp_name.upper() + " Train",
+            color=exp_colors[exp_name],
+        )
+        axes[1].plot(
+            x,
+            df["test_loss"],
+            label=exp_name.upper() + " Train",
+            color=exp_colors[exp_name],
+            alpha=0.66,
+        )
+
+        axes[0].set_xlabel("Epochs")
+        axes[0].set_ylabel("AUC")
+        axes[1].set_xlabel("Epochs")
+        axes[1].set_ylabel("Loss")
+        axes[0].set_ylim(0.3, 1.05)
+
+    n_labels = args.run.split("nlabels=")[1].replace("/", "")
+
+    # Titles
+    title = "MLP vs SPN ($N_{labels}=%s$)" % n_labels
+    plt.title(title)
+
+    plt.legend(loc="lower right")
+    plt.savefig(os.path.join(plot_dir, "result.png"), dpi=dpi)
+
+
+def plot_accs_mnist_multilabel():
+    base_dir_acc = os.path.join(args.run)
+    plot_dir = plot_base_dir
+    ensure_dir(plot_dir)
+    ftype = "csv"
+
+    fig, axes = plt.subplots(ncols=2)
+    sns.despine()
+    fig.set_figheight(5)
+    fig.set_figwidth(15)
 
     # For each dataset and each suffix (configuration)
     for exp_name in exp_names:
@@ -299,34 +366,65 @@ def plot_accs_mnist_multilabel():
 
         NEPOCHS = df.shape[0]
         x = range(NEPOCHS)
-        plt.plot(
+
+        alpha_train = 0.6
+        alpha_test = 1.0
+        linewidth_train = 2.0
+        linewidth_test = 3.0
+
+        # Plot accuracy
+        axes[0].plot(
             x,
             df["train_acc"],
             label=exp_name.upper() + " Train",
             color=exp_colors[exp_name],
+            alpha=alpha_train,
+            linewidth=linewidth_train,
         )
-        plt.plot(
+        axes[0].plot(
             x,
             df["test_acc"],
             label=exp_name.upper() + " Test",
             color=exp_colors[exp_name],
-            alpha=0.66,
+            alpha=alpha_test,
+            linewidth=linewidth_test,
         )
 
-    n_labels = args.run.split("nlabel=")[1].replace("/", "")
+        # Plot loss
+        axes[1].plot(
+            x,
+            df["train_loss"],
+            label=exp_name.upper() + " Train",
+            color=exp_colors[exp_name],
+            alpha=alpha_train,
+            linewidth=linewidth_train,
+        )
+        axes[1].plot(
+            x,
+            df["test_loss"],
+            label=exp_name.upper() + " Test",
+            color=exp_colors[exp_name],
+            alpha=alpha_test,
+            linewidth=linewidth_test,
+        )
+
+        axes[0].set_xlabel("Epochs")
+        axes[0].set_ylabel("Accuracy")
+        axes[1].set_xlabel("Epochs")
+        axes[1].set_ylabel("Loss")
+        # axes[0].set_ylim(65, 100)
+
+    run_args = load_args(args.run)
+    n_labels = run_args.n_labels
 
     # Titles
-    title = "MLP vs SPN ($N_{labels}=%s$)" % n_labels
-    plt.title(title)
-
-    # Y axis
-    plt.ylabel("Accuracy")
-    plt.ylim((10, 105))
-
-    # X axis
-    plt.xlabel("Epochs")
-    plt.legend(loc="lower right")
-    plt.savefig(os.path.join(plot_dir, "result.png"), dpi=dpi)
+    title = "MNIST Multilabel ($N_{labels}=%s$)" % n_labels
+    fig.suptitle(title)
+    # Shrink current axis's height by 10% on the bottom
+    fontP = FontProperties()
+    fontP.set_size("small")
+    plt.legend(loc="upper right", fancybox=True, framealpha=0.5, prop=fontP)
+    plt.savefig(os.path.join(plot_dir, "result.png"), dpi=dpi, bbox_inches="tight")
 
 
 def plot_n_gaussians():
@@ -389,36 +487,25 @@ def plot_n_gaussians():
 
 
 if __name__ == "__main__":
+
+    # Apply seaborn default styling
+    sns.set(context="notebook")
+    sns.set_style("white")
+    colors = sns.color_palette()
     dpi = 160
-    NEPOCHS = 100
-    ftype = "csv"
-    # dataset_names = [
-    #     "iris-2d",
-    #     "wine-2d",
-    #     "diabetes",
-    #     "audit",
-    #     "banknotes",
-    #     "ionosphere",
-    #     "sonar",
-    #     "wheat-2d",
-    #     "synth-8-easy",
-    #     "synth-8-hard",
-    #     "synth-64-easy",
-    #     "synth-64-hard",
-    # ]
-    # dataset_size = {}
-    # for name, loader in data_loader.load_dataset_map().items():
-    #     X, y = loader()
-    #     n = X.shape[0]
-    #     dataset_size[name] = n
 
     args = parse_args()
+    exp_names = sorted(os.listdir(args.run))
+    os.path.isdir
+    isdir = lambda path: os.path.isdir(os.path.join(args.run, path))
+    exp_names = list(filter(isdir, exp_names))
+    # If this result_dir has been visualized alread, exclude the plots dir
+    if "plots" in exp_names:
+        exp_names.remove("plots")
+
+    exp_colors = {exp_names[i]: colors[i] for i in range(len(exp_names))}
+
     plot_base_dir = os.path.join(args.run, "plots")
 
     # Run plot generation
-    # plot_epoch_loss_acc()
-    # plot_accuracies()
-    # plot_fewshot_results()
-    # plot_accs_multiple_percentages()
-    # plot_accs_mnist_multilabel()
-    plot_n_gaussians()
+    plot_accs_mnist_multilabel()

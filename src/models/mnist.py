@@ -47,9 +47,6 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
     n_samples = get_n_samples_from_loader(train_loader)
 
     for batch_idx, (data, target) in enumerate(train_loader):
-        import ipdb
-
-        ipdb.set_trace(context=5)
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)

@@ -73,18 +73,24 @@ g6 = Gaussian(1, 1, scope=6)
 
 p11 = Product([g1, g2])
 p12 = Product([g1, g2])
+p13 = Product([g1, g2])
 p21 = Product([g3, g4])
 p22 = Product([g3, g4])
+p23 = Product([g3, g4])
 p31 = Product([g5, g6])
 p32 = Product([g5, g6])
+p33 = Product([g5, g6])
 
-s1 = Sum([0.5, 0.5], [p11, p12])
-s2 = Sum([0.5, 0.5], [p21, p22])
-s3 = Sum([0.5, 0.5], [p31, p32])
+s1 = Sum([0.33, 0.33, 0.33], [p11, p12, p13])
+s2 = Sum([0.33, 0.33, 0.33], [p21, p22, p23])
+s3 = Sum([0.33, 0.33, 0.33], [p31, p32, p33])
 
 root = Product([s1, s2, s3])
 
 assign_ids(root)
 rebuild_scopes_bottom_up(root)
 
+import matplotlib.pyplot as plt
+
+fig = plt.figure(figsize=(12, 6), dpi=180)
 plot_spn(root, "spn.png")

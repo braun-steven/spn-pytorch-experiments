@@ -1,12 +1,28 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import torch
+import numpy as np
+import os
+
+from tqdm import tqdm
+from matplotlib import pyplot as plt
+
+from observations.util import maybe_download_and_extract
+from observations.mnist import mnist
+
 from typing import Dict, Callable
 from torchvision import transforms, datasets
 
 import numpy as np
+import logging
 
 from sklearn.datasets import load_iris, load_wine, make_classification
 
 BASE_DIR = "data/raw/"
+
+logger = logging.getLogger(__name__)
 
 
 def load_audit():
@@ -289,6 +305,60 @@ def get_mnist_subset(train_bs, test_bs, use_cuda=False, p=100):
     return train_loader, test_loader
 
 
+def get_cifar100_loader(
+    use_cuda, args, train_sampler=None, test_sampler=None, size=(28, 28)
+):
+    """
+    Get the CIFAR100 pytorch data loader.
+    
+    Args:
+        use_cuda: Use cuda flag.
+        args: Command line arguments.
+        sampler: Dataset sampler.
+
+    """
+
+    kwargs = {"num_workers": 1, "pin_memory": False} if use_cuda else {}
+
+    if args.debug:
+        train_sampler = torch.utils.data.SubsetRandomSampler(
+            indices=np.random.randint(0, 60000, (args.batch_size))
+        )
+        test_sampler = torch.utils.data.SubsetRandomSampler(
+            indices=np.random.randint(0, 10000, (args.batch_size))
+        )
+
+    transformer = transforms.Compose(
+        [
+            transforms.Resize(size),
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
+        ]
+    )
+    # Train data loader
+    train_loader = torch.utils.data.DataLoader(
+        datasets.CIFAR100("../data", train=True, download=True, transform=transformer),
+        batch_size=args.batch_size,
+        shuffle=train_sampler is None,
+        sampler=train_sampler,
+        **kwargs,
+    )
+
+    # If test batch size is not set, use all of the test data
+    if args.test_batch_size is None:
+        args.test_batch_size = 10000
+
+    # Test data loader
+    test_loader = torch.utils.data.DataLoader(
+        datasets.CIFAR100("../data", train=False, transform=transformer),
+        batch_size=args.test_batch_size,
+        shuffle=test_sampler is None,
+        sampler=test_sampler,
+        **kwargs,
+    )
+    return train_loader, test_loader
+
+
 def get_mnist_loaders(
     use_cuda, args, train_sampler=None, test_sampler=None, size=(28, 28)
 ):
@@ -302,7 +372,7 @@ def get_mnist_loaders(
 
     """
 
-    kwargs = {"num_workers": 1, "pin_memory": True} if use_cuda else {}
+    kwargs = {"num_workers": 1, "pin_memory": False} if use_cuda else {}
 
     if args.debug:
         train_sampler = torch.utils.data.SubsetRandomSampler(
@@ -327,6 +397,10 @@ def get_mnist_loaders(
         sampler=train_sampler,
         **kwargs,
     )
+
+    # If test batch size is not set, use all of the test data
+    if args.test_batch_size is None:
+        args.test_batch_size = 10000
 
     # Test data loader
     test_loader = torch.utils.data.DataLoader(
@@ -375,7 +449,7 @@ def get_multilabel_mnist_loader(n_labels, use_cuda, args, size=(28, 28)):
         mnist_test, batch_size=1, shuffle=True, **kwargs
     )
 
-    def make_multilabel_loader(loader):
+    def make_multilabel_loader(loader, batch_size: int):
         loaders = [
             torch.utils.data.DataLoader(
                 mnist_train, batch_size=1, shuffle=True, **kwargs
@@ -401,9 +475,201 @@ def get_multilabel_mnist_loader(n_labels, use_cuda, args, size=(28, 28)):
         data = torch.cat(tensors_data, dim=0)
         targets = torch.stack(tensors_targets)
         dataset = torch.utils.data.TensorDataset(data, targets)
-        loader = torch.utils.data.DataLoader(dataset, batch_size=args.batch_size)
+        loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
         return loader
 
-    train_loader = make_multilabel_loader(train_loader)
-    test_loader = make_multilabel_loader(test_loader)
+    train_loader = make_multilabel_loader(train_loader, args.batch_size)
+    test_loader = make_multilabel_loader(test_loader, 10000)
     return train_loader, test_loader
+
+
+def _multi_mnist(path, max_digits=2, highest_digit=9, canvas_size=50, seed=42):
+    """
+    - Adapted from:  https://raw.githubusercontent.com/edwardlib/observations/master/observations/multi_mnist.py   
+    - Allows overlapping digits and removes unnecessary big padding.
+
+    Load the multiple MNIST data set [@eslami2016attend]. It modifies
+  the original MNIST such that each image contains a number of
+  non-overlapping random MNIST digits with equal probability.
+
+  Args:
+    path: str.
+      Path to directory which either stores file or otherwise file will
+      be downloaded and extracted there. Filename is
+      `'multi_mnist_{}_{}_{}.npz'.format(max_digits, canvas_size, seed)`.
+    max_digits: int, optional.
+      Maximum number of non-overlapping MNIST digits per image to
+      generate if not cached.
+    highest_digit: int, optional.
+      Highest digit: Sample from [0, 1, .., highest_digit].
+    canvas_size: list of two int, optional.
+      Width x height pixel size of generated images if not cached.
+    seed: int, optional.
+      Random seed to generate the data set from MNIST if not cached.
+
+  Returns:
+    Tuple of (np.ndarray of dtype uint8, list)
+    `(x_train, y_train), (x_test, y_test)`. Each element in the y's is a
+    np.ndarray of labels, one label for each digit in the image.
+  """
+    from scipy.misc import imresize
+
+    def _sample_one(canvas_size, x_data, y_data):
+        i = np.random.randint(x_data.shape[0])
+        digit = x_data[i]
+        label = y_data[i]
+        scale = 0.1 * np.random.randn() + 1.3
+        resized = imresize(digit, 1.0 / scale)
+        width = resized.shape[0]
+        padding = canvas_size - width
+        pad_l = np.random.randint(0, padding)
+        pad_r = np.random.randint(0, padding)
+        pad_width = ((pad_l, padding - pad_l), (pad_r, padding - pad_r))
+        positioned = np.pad(resized, pad_width, "constant", constant_values=0)
+        return positioned, label
+
+    def _sample_multi(num_digits, canvas_size, x_data, y_data):
+        canvas_size_ext = canvas_size + 10
+        canvas = np.zeros((canvas_size_ext, canvas_size_ext))
+        labels = []
+        for _ in range(num_digits):
+            while True:
+                positioned_digit, label = _sample_one(canvas_size_ext, x_data, y_data)
+
+                if label not in labels:
+                    canvas += positioned_digit
+                    labels.append(label)
+                    break
+
+        if np.max(canvas) > 255 * 2:  # crude check for more than two overlapping digits
+            return _sample_multi(num_digits, canvas_size, x_data, y_data)
+        else:
+            labels = np.array(labels, dtype=np.uint8)
+            canvas = canvas[5:-5, 5:-5]
+            return canvas, labels
+
+    def _build_dataset(x_data, y_data, max_digits, canvas_size):
+        x = []
+        y = []
+        data_size = x_data.shape[0]
+
+        # Mask
+        y_mask = y_data < highest_digit
+        y_data = y_data[y_mask]
+        x_data = x_data[y_mask]
+
+        # Randomly sample k digits
+        data_num_digits = np.random.randint(1, max_digits + 1, size=data_size)
+        x_data = np.reshape(x_data, [x_data.shape[0], 28, 28])
+        for num_digits in tqdm(data_num_digits):
+            canvas, labels = _sample_multi(num_digits, canvas_size, x_data, y_data)
+            x.append(canvas)
+            y.append(labels)
+        x = np.array(x, dtype=np.uint8)
+        return x, y
+
+    path = os.path.expanduser(path)
+    cache_filename = "multi_mnist_max_digits={}_highest_digit={}_canvas={}_{}.npz".format(
+        max_digits, highest_digit, canvas_size, seed
+    )
+    if os.path.exists(os.path.join(path, cache_filename)):
+        logger.info("Loading cached Multi MNIST dataset: %s ...", cache_filename)
+        data = np.load(os.path.join(path, cache_filename))
+        return (data["x_train"], data["y_train"]), (data["x_test"], data["y_test"])
+    logger.info("Creating new Multi MNIST dataset ...")
+    np.random.seed(seed)
+    (x_train, y_train), (x_test, y_test) = mnist(path)
+    x_train, y_train = _build_dataset(x_train, y_train, max_digits, canvas_size)
+    x_test, y_test = _build_dataset(x_test, y_test, max_digits, canvas_size)
+    with open(os.path.join(path, cache_filename), "wb") as f:
+        np.savez_compressed(
+            f, x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test
+        )
+    return (x_train, y_train), (x_test, y_test)
+
+
+def load_multi_mnist(n_labels, canvas_size=64, seed=0, args=None):
+    """
+    Load the multi mnist dataset, drawn on the given canvas size.
+
+    Args:
+        n_labels: Number of different possible digits (sample from [0, 1, ..., n_labels]).
+        canvas_size: Canvas size.
+        seed: Random seed.
+        args: Command line arguments.
+    Returns:
+        Tuple: Train data loader, Test data loader
+    """
+    # Load the mnist dataset as np arrays
+    (x_train, y_train), (x_test, y_test) = _multi_mnist(
+        "./data/multi-mnist",
+        max_digits=args.n_digits,
+        highest_digit=n_labels,
+        canvas_size=canvas_size,
+        seed=seed,
+    )
+
+    if args.debug:
+        x_train = x_train[:100]
+        x_test = x_test[:100]
+        y_train = y_train[:100]
+        y_test = y_test[:100]
+
+    if args.force_overfit:
+        x_train = x_train[:100]
+        y_train = y_train[:100]
+        x_test = x_test[:100]
+        y_test = y_test[:100]
+
+    def _make_dataloader(x, y, batch_size):
+        x = x / x.max()  # Squash between 0 and 1
+        x = x - x_train.mean()  # Center
+        x = x / x_train.std()  # Normalize
+        x_torch = torch.tensor(x).float().unsqueeze(1)
+
+        ys = []
+        # Transform target labels into bincounts
+        for y_i in y:
+            y_count = torch.bincount(torch.tensor(y_i), minlength=n_labels)
+            ys.append(y_count)
+
+        y_torch = torch.stack(ys).float()
+        dataset = torch.utils.data.TensorDataset(x_torch, y_torch)
+        loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size)
+        return loader
+
+    # batch_size = args.batch_size
+    # test_batch_size = args.test_batch_size
+
+    # If cuda is enabled, multiple batchsize by number of different devices
+    # if args.cuda:
+    #     num_cuda_devices = len(args.cuda_device_id)
+    #     batch_size = batch_size * num_cuda_devices
+    #     test_batch_size = test_batch_size * num_cuda_devices
+
+    train_loader = _make_dataloader(x_train, y_train, args.batch_size)
+    test_loader = _make_dataloader(x_test, y_test, args.test_batch_size)
+
+    return train_loader, test_loader
+
+
+if __name__ == "__main__":
+    (x_train, y_train), (x_test, y_test) = _multi_mnist(
+        "./data/multi-mnist", max_digits=5, highest_digit=10, canvas_size=50, seed=1
+    )
+    import matplotlib.pyplot as plt
+    import os
+
+    def save(x, y, dir):
+        for i, (x_i, y_i) in enumerate(zip(x, y)):
+            plt.imshow(x_i)
+            plt.axis("off")
+            y_encoded = torch.bincount(torch.tensor(y_i), minlength=10)
+            plt.title("Label: {}\nEncoded: {}".format(y_i, y_encoded))
+            plt.savefig(os.path.join(dir, "%s.png" % i))
+
+            if i > 10:
+                break
+
+    save(x_train, y_train, "data/multi-mnist/train")
+    save(x_train, y_train, "data/multi-mnist/test")
