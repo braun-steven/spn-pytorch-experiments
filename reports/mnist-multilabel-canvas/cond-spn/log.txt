@@ -1,0 +1,795 @@
+2019-05-15 23:46:23,615 - INFO -  -- MNIST Multilabel -- Started 
+2019-05-15 23:46:23,639 - INFO - Main device: cuda:0
+2019-05-15 23:46:23,640 - INFO - Creating new Multi MNIST dataset ...
+2019-05-15 23:55:05,251 - INFO - Number of paramters: 11238154
+2019-05-15 23:55:05,734 - INFO - Train Epoch: 1 [    0/60000 (0%)]	Loss: 5.721848
+2019-05-15 23:55:09,658 - INFO - Train Epoch: 1 [ 5120/60000 (8%)]	Loss: 0.879284
+2019-05-15 23:55:13,765 - INFO - Train Epoch: 1 [10240/60000 (17%)]	Loss: 0.562481
+2019-05-15 23:55:17,917 - INFO - Train Epoch: 1 [15360/60000 (25%)]	Loss: 0.543331
+2019-05-15 23:55:22,059 - INFO - Train Epoch: 1 [20480/60000 (34%)]	Loss: 0.520291
+2019-05-15 23:55:26,188 - INFO - Train Epoch: 1 [25600/60000 (42%)]	Loss: 0.521251
+2019-05-15 23:55:30,194 - INFO - Train Epoch: 1 [30720/60000 (51%)]	Loss: 0.543859
+2019-05-15 23:55:34,353 - INFO - Train Epoch: 1 [35840/60000 (59%)]	Loss: 0.542125
+2019-05-15 23:55:38,379 - INFO - Train Epoch: 1 [40960/60000 (68%)]	Loss: 0.536607
+2019-05-15 23:55:42,329 - INFO - Train Epoch: 1 [46080/60000 (76%)]	Loss: 0.502197
+2019-05-15 23:55:46,438 - INFO - Train Epoch: 1 [51200/60000 (85%)]	Loss: 0.514711
+2019-05-15 23:55:50,443 - INFO - Train Epoch: 1 [56320/60000 (93%)]	Loss: 0.536869
+2019-05-15 23:55:53,199 - INFO - Train Epoch: 1 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-15 23:56:05,364 - INFO - Train set: Average loss: 0.5219, Accuracy: 74.23%
+2019-05-15 23:56:07,439 - INFO - Test  set: Average loss: 0.5221, Accuracy: 74.30%
+2019-05-15 23:56:07,854 - INFO - Train Epoch: 2 [    0/60000 (0%)]	Loss: 0.519779
+2019-05-15 23:56:11,970 - INFO - Train Epoch: 2 [ 5120/60000 (8%)]	Loss: 0.529945
+2019-05-15 23:56:16,031 - INFO - Train Epoch: 2 [10240/60000 (17%)]	Loss: 0.511836
+2019-05-15 23:56:20,019 - INFO - Train Epoch: 2 [15360/60000 (25%)]	Loss: 0.523990
+2019-05-15 23:56:24,070 - INFO - Train Epoch: 2 [20480/60000 (34%)]	Loss: 0.509961
+2019-05-15 23:56:28,109 - INFO - Train Epoch: 2 [25600/60000 (42%)]	Loss: 0.509826
+2019-05-15 23:56:32,148 - INFO - Train Epoch: 2 [30720/60000 (51%)]	Loss: 0.530800
+2019-05-15 23:56:36,206 - INFO - Train Epoch: 2 [35840/60000 (59%)]	Loss: 0.534660
+2019-05-15 23:56:40,449 - INFO - Train Epoch: 2 [40960/60000 (68%)]	Loss: 0.529343
+2019-05-15 23:56:44,655 - INFO - Train Epoch: 2 [46080/60000 (76%)]	Loss: 0.496224
+2019-05-15 23:56:48,788 - INFO - Train Epoch: 2 [51200/60000 (85%)]	Loss: 0.513164
+2019-05-15 23:56:52,897 - INFO - Train Epoch: 2 [56320/60000 (93%)]	Loss: 0.525114
+2019-05-15 23:56:55,701 - INFO - Train Epoch: 2 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-15 23:57:07,991 - INFO - Train set: Average loss: 0.5147, Accuracy: 74.48%
+2019-05-15 23:57:10,089 - INFO - Test  set: Average loss: 0.5157, Accuracy: 74.53%
+2019-05-15 23:57:10,501 - INFO - Train Epoch: 3 [    0/60000 (0%)]	Loss: 0.513374
+2019-05-15 23:57:14,656 - INFO - Train Epoch: 3 [ 5120/60000 (8%)]	Loss: 0.525631
+2019-05-15 23:57:18,667 - INFO - Train Epoch: 3 [10240/60000 (17%)]	Loss: 0.507262
+2019-05-15 23:57:22,772 - INFO - Train Epoch: 3 [15360/60000 (25%)]	Loss: 0.519006
+2019-05-15 23:57:26,922 - INFO - Train Epoch: 3 [20480/60000 (34%)]	Loss: 0.506296
+2019-05-15 23:57:31,066 - INFO - Train Epoch: 3 [25600/60000 (42%)]	Loss: 0.505998
+2019-05-15 23:57:35,197 - INFO - Train Epoch: 3 [30720/60000 (51%)]	Loss: 0.525975
+2019-05-15 23:57:39,209 - INFO - Train Epoch: 3 [35840/60000 (59%)]	Loss: 0.530150
+2019-05-15 23:57:43,170 - INFO - Train Epoch: 3 [40960/60000 (68%)]	Loss: 0.523494
+2019-05-15 23:57:47,218 - INFO - Train Epoch: 3 [46080/60000 (76%)]	Loss: 0.490320
+2019-05-15 23:57:51,296 - INFO - Train Epoch: 3 [51200/60000 (85%)]	Loss: 0.509722
+2019-05-15 23:57:55,448 - INFO - Train Epoch: 3 [56320/60000 (93%)]	Loss: 0.517972
+2019-05-15 23:57:58,208 - INFO - Train Epoch: 3 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-15 23:58:10,462 - INFO - Train set: Average loss: 0.5104, Accuracy: 74.72%
+2019-05-15 23:58:12,554 - INFO - Test  set: Average loss: 0.5125, Accuracy: 74.81%
+2019-05-15 23:58:12,962 - INFO - Train Epoch: 4 [    0/60000 (0%)]	Loss: 0.508884
+2019-05-15 23:58:17,146 - INFO - Train Epoch: 4 [ 5120/60000 (8%)]	Loss: 0.524275
+2019-05-15 23:58:21,231 - INFO - Train Epoch: 4 [10240/60000 (17%)]	Loss: 0.507208
+2019-05-15 23:58:25,385 - INFO - Train Epoch: 4 [15360/60000 (25%)]	Loss: 0.513493
+2019-05-15 23:58:29,494 - INFO - Train Epoch: 4 [20480/60000 (34%)]	Loss: 0.501576
+2019-05-15 23:58:33,603 - INFO - Train Epoch: 4 [25600/60000 (42%)]	Loss: 0.503662
+2019-05-15 23:58:37,630 - INFO - Train Epoch: 4 [30720/60000 (51%)]	Loss: 0.521547
+2019-05-15 23:58:41,746 - INFO - Train Epoch: 4 [35840/60000 (59%)]	Loss: 0.526257
+2019-05-15 23:58:45,836 - INFO - Train Epoch: 4 [40960/60000 (68%)]	Loss: 0.520062
+2019-05-15 23:58:49,902 - INFO - Train Epoch: 4 [46080/60000 (76%)]	Loss: 0.488707
+2019-05-15 23:58:53,958 - INFO - Train Epoch: 4 [51200/60000 (85%)]	Loss: 0.504902
+2019-05-15 23:58:57,988 - INFO - Train Epoch: 4 [56320/60000 (93%)]	Loss: 0.516163
+2019-05-15 23:59:00,755 - INFO - Train Epoch: 4 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-15 23:59:12,846 - INFO - Train set: Average loss: 0.5068, Accuracy: 74.83%
+2019-05-15 23:59:14,886 - INFO - Test  set: Average loss: 0.5090, Accuracy: 74.86%
+2019-05-15 23:59:15,298 - INFO - Train Epoch: 5 [    0/60000 (0%)]	Loss: 0.506409
+2019-05-15 23:59:19,429 - INFO - Train Epoch: 5 [ 5120/60000 (8%)]	Loss: 0.519224
+2019-05-15 23:59:23,545 - INFO - Train Epoch: 5 [10240/60000 (17%)]	Loss: 0.500975
+2019-05-15 23:59:27,611 - INFO - Train Epoch: 5 [15360/60000 (25%)]	Loss: 0.510292
+2019-05-15 23:59:31,662 - INFO - Train Epoch: 5 [20480/60000 (34%)]	Loss: 0.496418
+2019-05-15 23:59:35,752 - INFO - Train Epoch: 5 [25600/60000 (42%)]	Loss: 0.497960
+2019-05-15 23:59:39,964 - INFO - Train Epoch: 5 [30720/60000 (51%)]	Loss: 0.512554
+2019-05-15 23:59:44,111 - INFO - Train Epoch: 5 [35840/60000 (59%)]	Loss: 0.521780
+2019-05-15 23:59:48,222 - INFO - Train Epoch: 5 [40960/60000 (68%)]	Loss: 0.513654
+2019-05-15 23:59:52,397 - INFO - Train Epoch: 5 [46080/60000 (76%)]	Loss: 0.489599
+2019-05-15 23:59:56,560 - INFO - Train Epoch: 5 [51200/60000 (85%)]	Loss: 0.496957
+2019-05-16 00:00:00,698 - INFO - Train Epoch: 5 [56320/60000 (93%)]	Loss: 0.512315
+2019-05-16 00:00:03,522 - INFO - Train Epoch: 5 took 0 days, 0 hours, 0 minutes, 49 seconds
+2019-05-16 00:00:15,956 - INFO - Train set: Average loss: 0.5047, Accuracy: 74.93%
+2019-05-16 00:00:18,041 - INFO - Test  set: Average loss: 0.5071, Accuracy: 74.87%
+2019-05-16 00:00:18,454 - INFO - Train Epoch: 6 [    0/60000 (0%)]	Loss: 0.505733
+2019-05-16 00:00:22,557 - INFO - Train Epoch: 6 [ 5120/60000 (8%)]	Loss: 0.514120
+2019-05-16 00:00:26,765 - INFO - Train Epoch: 6 [10240/60000 (17%)]	Loss: 0.498053
+2019-05-16 00:00:30,789 - INFO - Train Epoch: 6 [15360/60000 (25%)]	Loss: 0.502452
+2019-05-16 00:00:34,794 - INFO - Train Epoch: 6 [20480/60000 (34%)]	Loss: 0.492578
+2019-05-16 00:00:38,770 - INFO - Train Epoch: 6 [25600/60000 (42%)]	Loss: 0.493060
+2019-05-16 00:00:42,910 - INFO - Train Epoch: 6 [30720/60000 (51%)]	Loss: 0.503034
+2019-05-16 00:00:47,002 - INFO - Train Epoch: 6 [35840/60000 (59%)]	Loss: 0.515496
+2019-05-16 00:00:51,046 - INFO - Train Epoch: 6 [40960/60000 (68%)]	Loss: 0.507020
+2019-05-16 00:00:55,206 - INFO - Train Epoch: 6 [46080/60000 (76%)]	Loss: 0.483168
+2019-05-16 00:00:59,241 - INFO - Train Epoch: 6 [51200/60000 (85%)]	Loss: 0.492408
+2019-05-16 00:01:03,256 - INFO - Train Epoch: 6 [56320/60000 (93%)]	Loss: 0.509613
+2019-05-16 00:01:05,932 - INFO - Train Epoch: 6 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:01:18,468 - INFO - Train set: Average loss: 0.4954, Accuracy: 75.49%
+2019-05-16 00:01:20,553 - INFO - Test  set: Average loss: 0.4986, Accuracy: 75.36%
+2019-05-16 00:01:20,969 - INFO - Train Epoch: 7 [    0/60000 (0%)]	Loss: 0.494650
+2019-05-16 00:01:25,014 - INFO - Train Epoch: 7 [ 5120/60000 (8%)]	Loss: 0.507507
+2019-05-16 00:01:29,062 - INFO - Train Epoch: 7 [10240/60000 (17%)]	Loss: 0.490344
+2019-05-16 00:01:33,115 - INFO - Train Epoch: 7 [15360/60000 (25%)]	Loss: 0.501245
+2019-05-16 00:01:37,213 - INFO - Train Epoch: 7 [20480/60000 (34%)]	Loss: 0.491152
+2019-05-16 00:01:41,419 - INFO - Train Epoch: 7 [25600/60000 (42%)]	Loss: 0.489603
+2019-05-16 00:01:45,621 - INFO - Train Epoch: 7 [30720/60000 (51%)]	Loss: 0.499349
+2019-05-16 00:01:49,727 - INFO - Train Epoch: 7 [35840/60000 (59%)]	Loss: 0.510221
+2019-05-16 00:01:53,923 - INFO - Train Epoch: 7 [40960/60000 (68%)]	Loss: 0.504676
+2019-05-16 00:01:58,043 - INFO - Train Epoch: 7 [46080/60000 (76%)]	Loss: 0.483407
+2019-05-16 00:02:02,078 - INFO - Train Epoch: 7 [51200/60000 (85%)]	Loss: 0.491769
+2019-05-16 00:02:06,126 - INFO - Train Epoch: 7 [56320/60000 (93%)]	Loss: 0.509817
+2019-05-16 00:02:08,873 - INFO - Train Epoch: 7 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:02:21,681 - INFO - Train set: Average loss: 0.4917, Accuracy: 75.74%
+2019-05-16 00:02:23,818 - INFO - Test  set: Average loss: 0.4953, Accuracy: 75.53%
+2019-05-16 00:02:24,239 - INFO - Train Epoch: 8 [    0/60000 (0%)]	Loss: 0.490841
+2019-05-16 00:02:28,351 - INFO - Train Epoch: 8 [ 5120/60000 (8%)]	Loss: 0.502329
+2019-05-16 00:02:32,542 - INFO - Train Epoch: 8 [10240/60000 (17%)]	Loss: 0.488994
+2019-05-16 00:02:36,632 - INFO - Train Epoch: 8 [15360/60000 (25%)]	Loss: 0.496192
+2019-05-16 00:02:40,721 - INFO - Train Epoch: 8 [20480/60000 (34%)]	Loss: 0.485813
+2019-05-16 00:02:44,741 - INFO - Train Epoch: 8 [25600/60000 (42%)]	Loss: 0.484990
+2019-05-16 00:02:48,923 - INFO - Train Epoch: 8 [30720/60000 (51%)]	Loss: 0.490754
+2019-05-16 00:02:53,044 - INFO - Train Epoch: 8 [35840/60000 (59%)]	Loss: 0.506390
+2019-05-16 00:02:57,142 - INFO - Train Epoch: 8 [40960/60000 (68%)]	Loss: 0.499082
+2019-05-16 00:03:01,184 - INFO - Train Epoch: 8 [46080/60000 (76%)]	Loss: 0.482075
+2019-05-16 00:03:05,365 - INFO - Train Epoch: 8 [51200/60000 (85%)]	Loss: 0.484397
+2019-05-16 00:03:09,549 - INFO - Train Epoch: 8 [56320/60000 (93%)]	Loss: 0.504912
+2019-05-16 00:03:12,335 - INFO - Train Epoch: 8 took 0 days, 0 hours, 0 minutes, 49 seconds
+2019-05-16 00:03:25,014 - INFO - Train set: Average loss: 0.4876, Accuracy: 75.94%
+2019-05-16 00:03:27,134 - INFO - Test  set: Average loss: 0.4920, Accuracy: 75.76%
+2019-05-16 00:03:27,542 - INFO - Train Epoch: 9 [    0/60000 (0%)]	Loss: 0.486518
+2019-05-16 00:03:31,602 - INFO - Train Epoch: 9 [ 5120/60000 (8%)]	Loss: 0.500653
+2019-05-16 00:03:35,811 - INFO - Train Epoch: 9 [10240/60000 (17%)]	Loss: 0.484106
+2019-05-16 00:03:39,825 - INFO - Train Epoch: 9 [15360/60000 (25%)]	Loss: 0.492527
+2019-05-16 00:03:43,939 - INFO - Train Epoch: 9 [20480/60000 (34%)]	Loss: 0.485513
+2019-05-16 00:03:48,100 - INFO - Train Epoch: 9 [25600/60000 (42%)]	Loss: 0.484051
+2019-05-16 00:03:52,167 - INFO - Train Epoch: 9 [30720/60000 (51%)]	Loss: 0.486641
+2019-05-16 00:03:56,214 - INFO - Train Epoch: 9 [35840/60000 (59%)]	Loss: 0.504788
+2019-05-16 00:04:00,232 - INFO - Train Epoch: 9 [40960/60000 (68%)]	Loss: 0.495621
+2019-05-16 00:04:04,328 - INFO - Train Epoch: 9 [46080/60000 (76%)]	Loss: 0.473615
+2019-05-16 00:04:08,410 - INFO - Train Epoch: 9 [51200/60000 (85%)]	Loss: 0.478794
+2019-05-16 00:04:12,503 - INFO - Train Epoch: 9 [56320/60000 (93%)]	Loss: 0.499223
+2019-05-16 00:04:15,340 - INFO - Train Epoch: 9 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:04:28,095 - INFO - Train set: Average loss: 0.4841, Accuracy: 76.14%
+2019-05-16 00:04:30,251 - INFO - Test  set: Average loss: 0.4888, Accuracy: 75.88%
+2019-05-16 00:04:30,659 - INFO - Train Epoch: 10 [    0/60000 (0%)]	Loss: 0.482526
+2019-05-16 00:04:34,736 - INFO - Train Epoch: 10 [ 5120/60000 (8%)]	Loss: 0.496062
+2019-05-16 00:04:38,845 - INFO - Train Epoch: 10 [10240/60000 (17%)]	Loss: 0.481677
+2019-05-16 00:04:42,950 - INFO - Train Epoch: 10 [15360/60000 (25%)]	Loss: 0.492735
+2019-05-16 00:04:46,951 - INFO - Train Epoch: 10 [20480/60000 (34%)]	Loss: 0.484017
+2019-05-16 00:04:51,016 - INFO - Train Epoch: 10 [25600/60000 (42%)]	Loss: 0.479514
+2019-05-16 00:04:55,001 - INFO - Train Epoch: 10 [30720/60000 (51%)]	Loss: 0.485872
+2019-05-16 00:04:59,005 - INFO - Train Epoch: 10 [35840/60000 (59%)]	Loss: 0.502069
+2019-05-16 00:05:03,127 - INFO - Train Epoch: 10 [40960/60000 (68%)]	Loss: 0.491374
+2019-05-16 00:05:07,256 - INFO - Train Epoch: 10 [46080/60000 (76%)]	Loss: 0.469265
+2019-05-16 00:05:11,385 - INFO - Train Epoch: 10 [51200/60000 (85%)]	Loss: 0.476840
+2019-05-16 00:05:15,480 - INFO - Train Epoch: 10 [56320/60000 (93%)]	Loss: 0.497212
+2019-05-16 00:05:18,268 - INFO - Train Epoch: 10 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:05:30,544 - INFO - Train set: Average loss: 0.4827, Accuracy: 76.26%
+2019-05-16 00:05:32,638 - INFO - Test  set: Average loss: 0.4880, Accuracy: 76.00%
+2019-05-16 00:05:32,639 - INFO - Epoch 11: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:05:33,057 - INFO - Train Epoch: 11 [    0/60000 (0%)]	Loss: 0.482575
+2019-05-16 00:05:37,222 - INFO - Train Epoch: 11 [ 5120/60000 (8%)]	Loss: 0.495450
+2019-05-16 00:05:41,377 - INFO - Train Epoch: 11 [10240/60000 (17%)]	Loss: 0.478245
+2019-05-16 00:05:45,421 - INFO - Train Epoch: 11 [15360/60000 (25%)]	Loss: 0.490238
+2019-05-16 00:05:49,418 - INFO - Train Epoch: 11 [20480/60000 (34%)]	Loss: 0.482659
+2019-05-16 00:05:53,529 - INFO - Train Epoch: 11 [25600/60000 (42%)]	Loss: 0.474611
+2019-05-16 00:05:57,690 - INFO - Train Epoch: 11 [30720/60000 (51%)]	Loss: 0.482561
+2019-05-16 00:06:01,779 - INFO - Train Epoch: 11 [35840/60000 (59%)]	Loss: 0.499754
+2019-05-16 00:06:05,791 - INFO - Train Epoch: 11 [40960/60000 (68%)]	Loss: 0.488786
+2019-05-16 00:06:09,862 - INFO - Train Epoch: 11 [46080/60000 (76%)]	Loss: 0.464449
+2019-05-16 00:06:13,900 - INFO - Train Epoch: 11 [51200/60000 (85%)]	Loss: 0.473987
+2019-05-16 00:06:17,979 - INFO - Train Epoch: 11 [56320/60000 (93%)]	Loss: 0.492779
+2019-05-16 00:06:20,755 - INFO - Train Epoch: 11 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:06:32,996 - INFO - Train set: Average loss: 0.4795, Accuracy: 76.44%
+2019-05-16 00:06:35,061 - INFO - Test  set: Average loss: 0.4855, Accuracy: 76.01%
+2019-05-16 00:06:35,062 - INFO - Epoch 12: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:06:35,469 - INFO - Train Epoch: 12 [    0/60000 (0%)]	Loss: 0.480643
+2019-05-16 00:06:39,507 - INFO - Train Epoch: 12 [ 5120/60000 (8%)]	Loss: 0.493014
+2019-05-16 00:06:43,507 - INFO - Train Epoch: 12 [10240/60000 (17%)]	Loss: 0.475916
+2019-05-16 00:06:47,674 - INFO - Train Epoch: 12 [15360/60000 (25%)]	Loss: 0.487484
+2019-05-16 00:06:51,848 - INFO - Train Epoch: 12 [20480/60000 (34%)]	Loss: 0.480170
+2019-05-16 00:06:55,943 - INFO - Train Epoch: 12 [25600/60000 (42%)]	Loss: 0.470723
+2019-05-16 00:07:00,061 - INFO - Train Epoch: 12 [30720/60000 (51%)]	Loss: 0.475660
+2019-05-16 00:07:04,208 - INFO - Train Epoch: 12 [35840/60000 (59%)]	Loss: 0.498061
+2019-05-16 00:07:08,383 - INFO - Train Epoch: 12 [40960/60000 (68%)]	Loss: 0.486945
+2019-05-16 00:07:12,440 - INFO - Train Epoch: 12 [46080/60000 (76%)]	Loss: 0.463044
+2019-05-16 00:07:16,564 - INFO - Train Epoch: 12 [51200/60000 (85%)]	Loss: 0.471935
+2019-05-16 00:07:20,751 - INFO - Train Epoch: 12 [56320/60000 (93%)]	Loss: 0.488780
+2019-05-16 00:07:23,596 - INFO - Train Epoch: 12 took 0 days, 0 hours, 0 minutes, 49 seconds
+2019-05-16 00:07:36,117 - INFO - Train set: Average loss: 0.4767, Accuracy: 76.65%
+2019-05-16 00:07:38,231 - INFO - Test  set: Average loss: 0.4835, Accuracy: 76.23%
+2019-05-16 00:07:38,231 - INFO - Epoch 13: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:07:38,636 - INFO - Train Epoch: 13 [    0/60000 (0%)]	Loss: 0.480802
+2019-05-16 00:07:42,746 - INFO - Train Epoch: 13 [ 5120/60000 (8%)]	Loss: 0.487809
+2019-05-16 00:07:46,889 - INFO - Train Epoch: 13 [10240/60000 (17%)]	Loss: 0.471811
+2019-05-16 00:07:51,027 - INFO - Train Epoch: 13 [15360/60000 (25%)]	Loss: 0.484711
+2019-05-16 00:07:55,014 - INFO - Train Epoch: 13 [20480/60000 (34%)]	Loss: 0.477612
+2019-05-16 00:07:59,010 - INFO - Train Epoch: 13 [25600/60000 (42%)]	Loss: 0.469118
+2019-05-16 00:08:03,002 - INFO - Train Epoch: 13 [30720/60000 (51%)]	Loss: 0.471917
+2019-05-16 00:08:07,053 - INFO - Train Epoch: 13 [35840/60000 (59%)]	Loss: 0.493614
+2019-05-16 00:08:11,021 - INFO - Train Epoch: 13 [40960/60000 (68%)]	Loss: 0.483756
+2019-05-16 00:08:15,212 - INFO - Train Epoch: 13 [46080/60000 (76%)]	Loss: 0.457770
+2019-05-16 00:08:19,398 - INFO - Train Epoch: 13 [51200/60000 (85%)]	Loss: 0.469337
+2019-05-16 00:08:23,463 - INFO - Train Epoch: 13 [56320/60000 (93%)]	Loss: 0.485335
+2019-05-16 00:08:26,213 - INFO - Train Epoch: 13 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:08:38,562 - INFO - Train set: Average loss: 0.4750, Accuracy: 76.76%
+2019-05-16 00:08:40,782 - INFO - Test  set: Average loss: 0.4816, Accuracy: 76.39%
+2019-05-16 00:08:40,782 - INFO - Epoch 14: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:08:41,193 - INFO - Train Epoch: 14 [    0/60000 (0%)]	Loss: 0.480704
+2019-05-16 00:08:45,313 - INFO - Train Epoch: 14 [ 5120/60000 (8%)]	Loss: 0.488066
+2019-05-16 00:08:49,369 - INFO - Train Epoch: 14 [10240/60000 (17%)]	Loss: 0.470979
+2019-05-16 00:08:53,412 - INFO - Train Epoch: 14 [15360/60000 (25%)]	Loss: 0.484164
+2019-05-16 00:08:57,501 - INFO - Train Epoch: 14 [20480/60000 (34%)]	Loss: 0.477624
+2019-05-16 00:09:01,701 - INFO - Train Epoch: 14 [25600/60000 (42%)]	Loss: 0.465566
+2019-05-16 00:09:05,844 - INFO - Train Epoch: 14 [30720/60000 (51%)]	Loss: 0.471537
+2019-05-16 00:09:09,937 - INFO - Train Epoch: 14 [35840/60000 (59%)]	Loss: 0.493583
+2019-05-16 00:09:14,005 - INFO - Train Epoch: 14 [40960/60000 (68%)]	Loss: 0.478238
+2019-05-16 00:09:18,048 - INFO - Train Epoch: 14 [46080/60000 (76%)]	Loss: 0.451672
+2019-05-16 00:09:22,122 - INFO - Train Epoch: 14 [51200/60000 (85%)]	Loss: 0.465042
+2019-05-16 00:09:26,211 - INFO - Train Epoch: 14 [56320/60000 (93%)]	Loss: 0.482942
+2019-05-16 00:09:28,908 - INFO - Train Epoch: 14 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:09:41,436 - INFO - Train set: Average loss: 0.4702, Accuracy: 77.04%
+2019-05-16 00:09:43,488 - INFO - Test  set: Average loss: 0.4780, Accuracy: 76.63%
+2019-05-16 00:09:43,488 - INFO - Epoch 15: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:09:43,894 - INFO - Train Epoch: 15 [    0/60000 (0%)]	Loss: 0.476229
+2019-05-16 00:09:47,919 - INFO - Train Epoch: 15 [ 5120/60000 (8%)]	Loss: 0.480697
+2019-05-16 00:09:51,939 - INFO - Train Epoch: 15 [10240/60000 (17%)]	Loss: 0.469151
+2019-05-16 00:09:55,937 - INFO - Train Epoch: 15 [15360/60000 (25%)]	Loss: 0.478021
+2019-05-16 00:09:59,999 - INFO - Train Epoch: 15 [20480/60000 (34%)]	Loss: 0.476366
+2019-05-16 00:10:04,138 - INFO - Train Epoch: 15 [25600/60000 (42%)]	Loss: 0.461470
+2019-05-16 00:10:08,284 - INFO - Train Epoch: 15 [30720/60000 (51%)]	Loss: 0.467110
+2019-05-16 00:10:12,348 - INFO - Train Epoch: 15 [35840/60000 (59%)]	Loss: 0.488704
+2019-05-16 00:10:16,467 - INFO - Train Epoch: 15 [40960/60000 (68%)]	Loss: 0.480207
+2019-05-16 00:10:20,681 - INFO - Train Epoch: 15 [46080/60000 (76%)]	Loss: 0.451948
+2019-05-16 00:10:24,845 - INFO - Train Epoch: 15 [51200/60000 (85%)]	Loss: 0.459967
+2019-05-16 00:10:28,932 - INFO - Train Epoch: 15 [56320/60000 (93%)]	Loss: 0.479920
+2019-05-16 00:10:31,694 - INFO - Train Epoch: 15 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:10:44,378 - INFO - Train set: Average loss: 0.4662, Accuracy: 77.28%
+2019-05-16 00:10:46,538 - INFO - Test  set: Average loss: 0.4745, Accuracy: 76.78%
+2019-05-16 00:10:46,539 - INFO - Epoch 16: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:10:46,956 - INFO - Train Epoch: 16 [    0/60000 (0%)]	Loss: 0.472498
+2019-05-16 00:10:51,018 - INFO - Train Epoch: 16 [ 5120/60000 (8%)]	Loss: 0.479624
+2019-05-16 00:10:55,196 - INFO - Train Epoch: 16 [10240/60000 (17%)]	Loss: 0.462415
+2019-05-16 00:10:59,411 - INFO - Train Epoch: 16 [15360/60000 (25%)]	Loss: 0.474949
+2019-05-16 00:11:03,580 - INFO - Train Epoch: 16 [20480/60000 (34%)]	Loss: 0.471684
+2019-05-16 00:11:07,623 - INFO - Train Epoch: 16 [25600/60000 (42%)]	Loss: 0.458729
+2019-05-16 00:11:11,708 - INFO - Train Epoch: 16 [30720/60000 (51%)]	Loss: 0.464382
+2019-05-16 00:11:15,884 - INFO - Train Epoch: 16 [35840/60000 (59%)]	Loss: 0.486832
+2019-05-16 00:11:20,152 - INFO - Train Epoch: 16 [40960/60000 (68%)]	Loss: 0.473953
+2019-05-16 00:11:24,323 - INFO - Train Epoch: 16 [46080/60000 (76%)]	Loss: 0.445860
+2019-05-16 00:11:28,426 - INFO - Train Epoch: 16 [51200/60000 (85%)]	Loss: 0.456910
+2019-05-16 00:11:32,642 - INFO - Train Epoch: 16 [56320/60000 (93%)]	Loss: 0.478781
+2019-05-16 00:11:35,434 - INFO - Train Epoch: 16 took 0 days, 0 hours, 0 minutes, 49 seconds
+2019-05-16 00:11:48,009 - INFO - Train set: Average loss: 0.4624, Accuracy: 77.44%
+2019-05-16 00:11:50,101 - INFO - Test  set: Average loss: 0.4703, Accuracy: 76.96%
+2019-05-16 00:11:50,101 - INFO - Epoch 17: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:11:50,525 - INFO - Train Epoch: 17 [    0/60000 (0%)]	Loss: 0.469642
+2019-05-16 00:11:54,644 - INFO - Train Epoch: 17 [ 5120/60000 (8%)]	Loss: 0.475292
+2019-05-16 00:11:58,811 - INFO - Train Epoch: 17 [10240/60000 (17%)]	Loss: 0.456537
+2019-05-16 00:12:02,985 - INFO - Train Epoch: 17 [15360/60000 (25%)]	Loss: 0.469033
+2019-05-16 00:12:07,192 - INFO - Train Epoch: 17 [20480/60000 (34%)]	Loss: 0.463835
+2019-05-16 00:12:11,333 - INFO - Train Epoch: 17 [25600/60000 (42%)]	Loss: 0.458627
+2019-05-16 00:12:15,553 - INFO - Train Epoch: 17 [30720/60000 (51%)]	Loss: 0.464156
+2019-05-16 00:12:19,715 - INFO - Train Epoch: 17 [35840/60000 (59%)]	Loss: 0.483748
+2019-05-16 00:12:23,901 - INFO - Train Epoch: 17 [40960/60000 (68%)]	Loss: 0.468037
+2019-05-16 00:12:28,006 - INFO - Train Epoch: 17 [46080/60000 (76%)]	Loss: 0.437638
+2019-05-16 00:12:32,236 - INFO - Train Epoch: 17 [51200/60000 (85%)]	Loss: 0.454007
+2019-05-16 00:12:36,306 - INFO - Train Epoch: 17 [56320/60000 (93%)]	Loss: 0.472143
+2019-05-16 00:12:39,169 - INFO - Train Epoch: 17 took 0 days, 0 hours, 0 minutes, 49 seconds
+2019-05-16 00:12:51,589 - INFO - Train set: Average loss: 0.4611, Accuracy: 77.61%
+2019-05-16 00:12:53,659 - INFO - Test  set: Average loss: 0.4697, Accuracy: 77.15%
+2019-05-16 00:12:53,659 - INFO - Epoch 18: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:12:54,071 - INFO - Train Epoch: 18 [    0/60000 (0%)]	Loss: 0.468840
+2019-05-16 00:12:58,241 - INFO - Train Epoch: 18 [ 5120/60000 (8%)]	Loss: 0.473206
+2019-05-16 00:13:02,421 - INFO - Train Epoch: 18 [10240/60000 (17%)]	Loss: 0.454324
+2019-05-16 00:13:06,608 - INFO - Train Epoch: 18 [15360/60000 (25%)]	Loss: 0.468220
+2019-05-16 00:13:10,746 - INFO - Train Epoch: 18 [20480/60000 (34%)]	Loss: 0.461668
+2019-05-16 00:13:15,004 - INFO - Train Epoch: 18 [25600/60000 (42%)]	Loss: 0.449700
+2019-05-16 00:13:19,098 - INFO - Train Epoch: 18 [30720/60000 (51%)]	Loss: 0.458762
+2019-05-16 00:13:23,235 - INFO - Train Epoch: 18 [35840/60000 (59%)]	Loss: 0.478687
+2019-05-16 00:13:27,447 - INFO - Train Epoch: 18 [40960/60000 (68%)]	Loss: 0.466598
+2019-05-16 00:13:31,536 - INFO - Train Epoch: 18 [46080/60000 (76%)]	Loss: 0.437173
+2019-05-16 00:13:35,650 - INFO - Train Epoch: 18 [51200/60000 (85%)]	Loss: 0.452930
+2019-05-16 00:13:39,854 - INFO - Train Epoch: 18 [56320/60000 (93%)]	Loss: 0.466806
+2019-05-16 00:13:42,741 - INFO - Train Epoch: 18 took 0 days, 0 hours, 0 minutes, 49 seconds
+2019-05-16 00:13:55,525 - INFO - Train set: Average loss: 0.4604, Accuracy: 77.79%
+2019-05-16 00:13:57,597 - INFO - Test  set: Average loss: 0.4697, Accuracy: 77.28%
+2019-05-16 00:13:57,597 - INFO - Epoch 19: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:13:58,037 - INFO - Train Epoch: 19 [    0/60000 (0%)]	Loss: 0.469267
+2019-05-16 00:14:02,059 - INFO - Train Epoch: 19 [ 5120/60000 (8%)]	Loss: 0.469410
+2019-05-16 00:14:06,124 - INFO - Train Epoch: 19 [10240/60000 (17%)]	Loss: 0.452960
+2019-05-16 00:14:10,161 - INFO - Train Epoch: 19 [15360/60000 (25%)]	Loss: 0.462503
+2019-05-16 00:14:14,320 - INFO - Train Epoch: 19 [20480/60000 (34%)]	Loss: 0.458083
+2019-05-16 00:14:18,427 - INFO - Train Epoch: 19 [25600/60000 (42%)]	Loss: 0.447307
+2019-05-16 00:14:22,498 - INFO - Train Epoch: 19 [30720/60000 (51%)]	Loss: 0.456249
+2019-05-16 00:14:26,512 - INFO - Train Epoch: 19 [35840/60000 (59%)]	Loss: 0.476514
+2019-05-16 00:14:30,358 - INFO - Train Epoch: 19 [40960/60000 (68%)]	Loss: 0.464250
+2019-05-16 00:14:34,389 - INFO - Train Epoch: 19 [46080/60000 (76%)]	Loss: 0.436269
+2019-05-16 00:14:38,571 - INFO - Train Epoch: 19 [51200/60000 (85%)]	Loss: 0.447695
+2019-05-16 00:14:42,631 - INFO - Train Epoch: 19 [56320/60000 (93%)]	Loss: 0.460909
+2019-05-16 00:14:45,395 - INFO - Train Epoch: 19 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:14:57,550 - INFO - Train set: Average loss: 0.4551, Accuracy: 78.02%
+2019-05-16 00:14:59,597 - INFO - Test  set: Average loss: 0.4646, Accuracy: 77.50%
+2019-05-16 00:14:59,597 - INFO - Epoch 20: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:15:00,008 - INFO - Train Epoch: 20 [    0/60000 (0%)]	Loss: 0.463710
+2019-05-16 00:15:04,267 - INFO - Train Epoch: 20 [ 5120/60000 (8%)]	Loss: 0.465442
+2019-05-16 00:15:08,426 - INFO - Train Epoch: 20 [10240/60000 (17%)]	Loss: 0.445599
+2019-05-16 00:15:12,614 - INFO - Train Epoch: 20 [15360/60000 (25%)]	Loss: 0.456201
+2019-05-16 00:15:16,752 - INFO - Train Epoch: 20 [20480/60000 (34%)]	Loss: 0.455019
+2019-05-16 00:15:20,906 - INFO - Train Epoch: 20 [25600/60000 (42%)]	Loss: 0.443386
+2019-05-16 00:15:25,099 - INFO - Train Epoch: 20 [30720/60000 (51%)]	Loss: 0.450570
+2019-05-16 00:15:29,130 - INFO - Train Epoch: 20 [35840/60000 (59%)]	Loss: 0.476123
+2019-05-16 00:15:33,111 - INFO - Train Epoch: 20 [40960/60000 (68%)]	Loss: 0.461141
+2019-05-16 00:15:37,109 - INFO - Train Epoch: 20 [46080/60000 (76%)]	Loss: 0.429018
+2019-05-16 00:15:41,130 - INFO - Train Epoch: 20 [51200/60000 (85%)]	Loss: 0.443200
+2019-05-16 00:15:45,110 - INFO - Train Epoch: 20 [56320/60000 (93%)]	Loss: 0.456589
+2019-05-16 00:15:47,829 - INFO - Train Epoch: 20 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:16:00,112 - INFO - Train set: Average loss: 0.4562, Accuracy: 78.02%
+2019-05-16 00:16:02,172 - INFO - Test  set: Average loss: 0.4662, Accuracy: 77.49%
+2019-05-16 00:16:02,172 - INFO - Epoch 21: Reducing learning rate by 0.5 to 0.0001
+2019-05-16 00:16:02,583 - INFO - Train Epoch: 21 [    0/60000 (0%)]	Loss: 0.461752
+2019-05-16 00:16:06,595 - INFO - Train Epoch: 21 [ 5120/60000 (8%)]	Loss: 0.454850
+2019-05-16 00:16:10,626 - INFO - Train Epoch: 21 [10240/60000 (17%)]	Loss: 0.441513
+2019-05-16 00:16:14,702 - INFO - Train Epoch: 21 [15360/60000 (25%)]	Loss: 0.444273
+2019-05-16 00:16:18,788 - INFO - Train Epoch: 21 [20480/60000 (34%)]	Loss: 0.442062
+2019-05-16 00:16:22,919 - INFO - Train Epoch: 21 [25600/60000 (42%)]	Loss: 0.434022
+2019-05-16 00:16:27,088 - INFO - Train Epoch: 21 [30720/60000 (51%)]	Loss: 0.447726
+2019-05-16 00:16:31,193 - INFO - Train Epoch: 21 [35840/60000 (59%)]	Loss: 0.459733
+2019-05-16 00:16:35,217 - INFO - Train Epoch: 21 [40960/60000 (68%)]	Loss: 0.452430
+2019-05-16 00:16:39,301 - INFO - Train Epoch: 21 [46080/60000 (76%)]	Loss: 0.420488
+2019-05-16 00:16:43,290 - INFO - Train Epoch: 21 [51200/60000 (85%)]	Loss: 0.434291
+2019-05-16 00:16:47,347 - INFO - Train Epoch: 21 [56320/60000 (93%)]	Loss: 0.446088
+2019-05-16 00:16:50,106 - INFO - Train Epoch: 21 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:17:02,393 - INFO - Train set: Average loss: 0.4363, Accuracy: 79.00%
+2019-05-16 00:17:04,431 - INFO - Test  set: Average loss: 0.4502, Accuracy: 78.09%
+2019-05-16 00:17:04,432 - INFO - Epoch 22: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:17:04,839 - INFO - Train Epoch: 22 [    0/60000 (0%)]	Loss: 0.438490
+2019-05-16 00:17:08,904 - INFO - Train Epoch: 22 [ 5120/60000 (8%)]	Loss: 0.449304
+2019-05-16 00:17:12,958 - INFO - Train Epoch: 22 [10240/60000 (17%)]	Loss: 0.435335
+2019-05-16 00:17:17,045 - INFO - Train Epoch: 22 [15360/60000 (25%)]	Loss: 0.441415
+2019-05-16 00:17:21,105 - INFO - Train Epoch: 22 [20480/60000 (34%)]	Loss: 0.438837
+2019-05-16 00:17:25,286 - INFO - Train Epoch: 22 [25600/60000 (42%)]	Loss: 0.430024
+2019-05-16 00:17:29,502 - INFO - Train Epoch: 22 [30720/60000 (51%)]	Loss: 0.446521
+2019-05-16 00:17:33,696 - INFO - Train Epoch: 22 [35840/60000 (59%)]	Loss: 0.453326
+2019-05-16 00:17:37,880 - INFO - Train Epoch: 22 [40960/60000 (68%)]	Loss: 0.448223
+2019-05-16 00:17:41,888 - INFO - Train Epoch: 22 [46080/60000 (76%)]	Loss: 0.417297
+2019-05-16 00:17:45,936 - INFO - Train Epoch: 22 [51200/60000 (85%)]	Loss: 0.432459
+2019-05-16 00:17:50,071 - INFO - Train Epoch: 22 [56320/60000 (93%)]	Loss: 0.443052
+2019-05-16 00:17:52,870 - INFO - Train Epoch: 22 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:18:05,430 - INFO - Train set: Average loss: 0.4331, Accuracy: 79.18%
+2019-05-16 00:18:07,486 - INFO - Test  set: Average loss: 0.4484, Accuracy: 78.19%
+2019-05-16 00:18:07,487 - INFO - Epoch 23: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:18:07,899 - INFO - Train Epoch: 23 [    0/60000 (0%)]	Loss: 0.434367
+2019-05-16 00:18:11,901 - INFO - Train Epoch: 23 [ 5120/60000 (8%)]	Loss: 0.443697
+2019-05-16 00:18:16,044 - INFO - Train Epoch: 23 [10240/60000 (17%)]	Loss: 0.432364
+2019-05-16 00:18:20,193 - INFO - Train Epoch: 23 [15360/60000 (25%)]	Loss: 0.439449
+2019-05-16 00:18:24,234 - INFO - Train Epoch: 23 [20480/60000 (34%)]	Loss: 0.433728
+2019-05-16 00:18:28,347 - INFO - Train Epoch: 23 [25600/60000 (42%)]	Loss: 0.426908
+2019-05-16 00:18:32,329 - INFO - Train Epoch: 23 [30720/60000 (51%)]	Loss: 0.442176
+2019-05-16 00:18:36,347 - INFO - Train Epoch: 23 [35840/60000 (59%)]	Loss: 0.450976
+2019-05-16 00:18:40,381 - INFO - Train Epoch: 23 [40960/60000 (68%)]	Loss: 0.447323
+2019-05-16 00:18:44,383 - INFO - Train Epoch: 23 [46080/60000 (76%)]	Loss: 0.415026
+2019-05-16 00:18:48,427 - INFO - Train Epoch: 23 [51200/60000 (85%)]	Loss: 0.431382
+2019-05-16 00:18:52,445 - INFO - Train Epoch: 23 [56320/60000 (93%)]	Loss: 0.437826
+2019-05-16 00:18:55,175 - INFO - Train Epoch: 23 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:19:07,369 - INFO - Train set: Average loss: 0.4311, Accuracy: 79.33%
+2019-05-16 00:19:09,454 - INFO - Test  set: Average loss: 0.4484, Accuracy: 78.33%
+2019-05-16 00:19:09,454 - INFO - Epoch 24: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:19:09,879 - INFO - Train Epoch: 24 [    0/60000 (0%)]	Loss: 0.433828
+2019-05-16 00:19:13,895 - INFO - Train Epoch: 24 [ 5120/60000 (8%)]	Loss: 0.440028
+2019-05-16 00:19:17,885 - INFO - Train Epoch: 24 [10240/60000 (17%)]	Loss: 0.429600
+2019-05-16 00:19:22,010 - INFO - Train Epoch: 24 [15360/60000 (25%)]	Loss: 0.435344
+2019-05-16 00:19:26,285 - INFO - Train Epoch: 24 [20480/60000 (34%)]	Loss: 0.433529
+2019-05-16 00:19:30,450 - INFO - Train Epoch: 24 [25600/60000 (42%)]	Loss: 0.423687
+2019-05-16 00:19:34,566 - INFO - Train Epoch: 24 [30720/60000 (51%)]	Loss: 0.439332
+2019-05-16 00:19:38,699 - INFO - Train Epoch: 24 [35840/60000 (59%)]	Loss: 0.448174
+2019-05-16 00:19:42,776 - INFO - Train Epoch: 24 [40960/60000 (68%)]	Loss: 0.443758
+2019-05-16 00:19:46,755 - INFO - Train Epoch: 24 [46080/60000 (76%)]	Loss: 0.413964
+2019-05-16 00:19:50,803 - INFO - Train Epoch: 24 [51200/60000 (85%)]	Loss: 0.427676
+2019-05-16 00:19:54,943 - INFO - Train Epoch: 24 [56320/60000 (93%)]	Loss: 0.437355
+2019-05-16 00:19:57,750 - INFO - Train Epoch: 24 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:20:10,213 - INFO - Train set: Average loss: 0.4292, Accuracy: 79.43%
+2019-05-16 00:20:12,264 - INFO - Test  set: Average loss: 0.4481, Accuracy: 78.41%
+2019-05-16 00:20:12,264 - INFO - Epoch 25: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:20:12,696 - INFO - Train Epoch: 25 [    0/60000 (0%)]	Loss: 0.431444
+2019-05-16 00:20:16,810 - INFO - Train Epoch: 25 [ 5120/60000 (8%)]	Loss: 0.437787
+2019-05-16 00:20:20,918 - INFO - Train Epoch: 25 [10240/60000 (17%)]	Loss: 0.426838
+2019-05-16 00:20:24,987 - INFO - Train Epoch: 25 [15360/60000 (25%)]	Loss: 0.432400
+2019-05-16 00:20:29,002 - INFO - Train Epoch: 25 [20480/60000 (34%)]	Loss: 0.429245
+2019-05-16 00:20:33,099 - INFO - Train Epoch: 25 [25600/60000 (42%)]	Loss: 0.418834
+2019-05-16 00:20:37,109 - INFO - Train Epoch: 25 [30720/60000 (51%)]	Loss: 0.435456
+2019-05-16 00:20:41,152 - INFO - Train Epoch: 25 [35840/60000 (59%)]	Loss: 0.447882
+2019-05-16 00:20:45,223 - INFO - Train Epoch: 25 [40960/60000 (68%)]	Loss: 0.440170
+2019-05-16 00:20:49,316 - INFO - Train Epoch: 25 [46080/60000 (76%)]	Loss: 0.411459
+2019-05-16 00:20:53,397 - INFO - Train Epoch: 25 [51200/60000 (85%)]	Loss: 0.426020
+2019-05-16 00:20:57,417 - INFO - Train Epoch: 25 [56320/60000 (93%)]	Loss: 0.432713
+2019-05-16 00:21:00,177 - INFO - Train Epoch: 25 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:21:12,499 - INFO - Train set: Average loss: 0.4274, Accuracy: 79.63%
+2019-05-16 00:21:14,623 - INFO - Test  set: Average loss: 0.4484, Accuracy: 78.40%
+2019-05-16 00:21:14,623 - INFO - Epoch 26: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:21:15,035 - INFO - Train Epoch: 26 [    0/60000 (0%)]	Loss: 0.428095
+2019-05-16 00:21:19,121 - INFO - Train Epoch: 26 [ 5120/60000 (8%)]	Loss: 0.436428
+2019-05-16 00:21:23,154 - INFO - Train Epoch: 26 [10240/60000 (17%)]	Loss: 0.426770
+2019-05-16 00:21:27,130 - INFO - Train Epoch: 26 [15360/60000 (25%)]	Loss: 0.425437
+2019-05-16 00:21:31,159 - INFO - Train Epoch: 26 [20480/60000 (34%)]	Loss: 0.426329
+2019-05-16 00:21:35,321 - INFO - Train Epoch: 26 [25600/60000 (42%)]	Loss: 0.417484
+2019-05-16 00:21:39,409 - INFO - Train Epoch: 26 [30720/60000 (51%)]	Loss: 0.434475
+2019-05-16 00:21:43,402 - INFO - Train Epoch: 26 [35840/60000 (59%)]	Loss: 0.444167
+2019-05-16 00:21:47,386 - INFO - Train Epoch: 26 [40960/60000 (68%)]	Loss: 0.438861
+2019-05-16 00:21:51,554 - INFO - Train Epoch: 26 [46080/60000 (76%)]	Loss: 0.410397
+2019-05-16 00:21:55,601 - INFO - Train Epoch: 26 [51200/60000 (85%)]	Loss: 0.418623
+2019-05-16 00:21:59,662 - INFO - Train Epoch: 26 [56320/60000 (93%)]	Loss: 0.430583
+2019-05-16 00:22:02,411 - INFO - Train Epoch: 26 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:22:14,817 - INFO - Train set: Average loss: 0.4257, Accuracy: 79.69%
+2019-05-16 00:22:16,902 - INFO - Test  set: Average loss: 0.4475, Accuracy: 78.47%
+2019-05-16 00:22:16,902 - INFO - Epoch 27: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:22:17,320 - INFO - Train Epoch: 27 [    0/60000 (0%)]	Loss: 0.422913
+2019-05-16 00:22:21,475 - INFO - Train Epoch: 27 [ 5120/60000 (8%)]	Loss: 0.433448
+2019-05-16 00:22:25,592 - INFO - Train Epoch: 27 [10240/60000 (17%)]	Loss: 0.426320
+2019-05-16 00:22:29,688 - INFO - Train Epoch: 27 [15360/60000 (25%)]	Loss: 0.427075
+2019-05-16 00:22:33,779 - INFO - Train Epoch: 27 [20480/60000 (34%)]	Loss: 0.422526
+2019-05-16 00:22:37,830 - INFO - Train Epoch: 27 [25600/60000 (42%)]	Loss: 0.416784
+2019-05-16 00:22:41,973 - INFO - Train Epoch: 27 [30720/60000 (51%)]	Loss: 0.428506
+2019-05-16 00:22:46,098 - INFO - Train Epoch: 27 [35840/60000 (59%)]	Loss: 0.443301
+2019-05-16 00:22:50,140 - INFO - Train Epoch: 27 [40960/60000 (68%)]	Loss: 0.433870
+2019-05-16 00:22:54,224 - INFO - Train Epoch: 27 [46080/60000 (76%)]	Loss: 0.408370
+2019-05-16 00:22:58,301 - INFO - Train Epoch: 27 [51200/60000 (85%)]	Loss: 0.421161
+2019-05-16 00:23:02,383 - INFO - Train Epoch: 27 [56320/60000 (93%)]	Loss: 0.429300
+2019-05-16 00:23:05,113 - INFO - Train Epoch: 27 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:23:17,447 - INFO - Train set: Average loss: 0.4234, Accuracy: 79.82%
+2019-05-16 00:23:19,627 - INFO - Test  set: Average loss: 0.4474, Accuracy: 78.51%
+2019-05-16 00:23:19,628 - INFO - Epoch 28: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:23:20,048 - INFO - Train Epoch: 28 [    0/60000 (0%)]	Loss: 0.420993
+2019-05-16 00:23:24,207 - INFO - Train Epoch: 28 [ 5120/60000 (8%)]	Loss: 0.429286
+2019-05-16 00:23:28,263 - INFO - Train Epoch: 28 [10240/60000 (17%)]	Loss: 0.420221
+2019-05-16 00:23:32,397 - INFO - Train Epoch: 28 [15360/60000 (25%)]	Loss: 0.422524
+2019-05-16 00:23:36,406 - INFO - Train Epoch: 28 [20480/60000 (34%)]	Loss: 0.421162
+2019-05-16 00:23:40,531 - INFO - Train Epoch: 28 [25600/60000 (42%)]	Loss: 0.415699
+2019-05-16 00:23:44,762 - INFO - Train Epoch: 28 [30720/60000 (51%)]	Loss: 0.428702
+2019-05-16 00:23:48,848 - INFO - Train Epoch: 28 [35840/60000 (59%)]	Loss: 0.439763
+2019-05-16 00:23:52,951 - INFO - Train Epoch: 28 [40960/60000 (68%)]	Loss: 0.429590
+2019-05-16 00:23:57,021 - INFO - Train Epoch: 28 [46080/60000 (76%)]	Loss: 0.404613
+2019-05-16 00:24:01,084 - INFO - Train Epoch: 28 [51200/60000 (85%)]	Loss: 0.418899
+2019-05-16 00:24:05,231 - INFO - Train Epoch: 28 [56320/60000 (93%)]	Loss: 0.423213
+2019-05-16 00:24:08,002 - INFO - Train Epoch: 28 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:24:20,458 - INFO - Train set: Average loss: 0.4213, Accuracy: 79.93%
+2019-05-16 00:24:22,545 - INFO - Test  set: Average loss: 0.4481, Accuracy: 78.60%
+2019-05-16 00:24:22,545 - INFO - Epoch 29: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:24:22,953 - INFO - Train Epoch: 29 [    0/60000 (0%)]	Loss: 0.416934
+2019-05-16 00:24:26,999 - INFO - Train Epoch: 29 [ 5120/60000 (8%)]	Loss: 0.426454
+2019-05-16 00:24:31,153 - INFO - Train Epoch: 29 [10240/60000 (17%)]	Loss: 0.418606
+2019-05-16 00:24:35,371 - INFO - Train Epoch: 29 [15360/60000 (25%)]	Loss: 0.421508
+2019-05-16 00:24:39,498 - INFO - Train Epoch: 29 [20480/60000 (34%)]	Loss: 0.416563
+2019-05-16 00:24:43,598 - INFO - Train Epoch: 29 [25600/60000 (42%)]	Loss: 0.413699
+2019-05-16 00:24:47,710 - INFO - Train Epoch: 29 [30720/60000 (51%)]	Loss: 0.427873
+2019-05-16 00:24:51,804 - INFO - Train Epoch: 29 [35840/60000 (59%)]	Loss: 0.437094
+2019-05-16 00:24:55,883 - INFO - Train Epoch: 29 [40960/60000 (68%)]	Loss: 0.427212
+2019-05-16 00:24:59,955 - INFO - Train Epoch: 29 [46080/60000 (76%)]	Loss: 0.404523
+2019-05-16 00:25:03,956 - INFO - Train Epoch: 29 [51200/60000 (85%)]	Loss: 0.412994
+2019-05-16 00:25:07,992 - INFO - Train Epoch: 29 [56320/60000 (93%)]	Loss: 0.422961
+2019-05-16 00:25:10,807 - INFO - Train Epoch: 29 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:25:23,224 - INFO - Train set: Average loss: 0.4199, Accuracy: 80.06%
+2019-05-16 00:25:25,379 - INFO - Test  set: Average loss: 0.4490, Accuracy: 78.57%
+2019-05-16 00:25:25,379 - INFO - Epoch 30: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:25:25,798 - INFO - Train Epoch: 30 [    0/60000 (0%)]	Loss: 0.415101
+2019-05-16 00:25:29,889 - INFO - Train Epoch: 30 [ 5120/60000 (8%)]	Loss: 0.428011
+2019-05-16 00:25:33,958 - INFO - Train Epoch: 30 [10240/60000 (17%)]	Loss: 0.425733
+2019-05-16 00:25:38,008 - INFO - Train Epoch: 30 [15360/60000 (25%)]	Loss: 0.430984
+2019-05-16 00:25:41,919 - INFO - Train Epoch: 30 [20480/60000 (34%)]	Loss: 0.437062
+2019-05-16 00:25:45,935 - INFO - Train Epoch: 30 [25600/60000 (42%)]	Loss: 0.439956
+2019-05-16 00:25:49,886 - INFO - Train Epoch: 30 [30720/60000 (51%)]	Loss: 0.445073
+2019-05-16 00:25:53,806 - INFO - Train Epoch: 30 [35840/60000 (59%)]	Loss: 0.449559
+2019-05-16 00:25:57,683 - INFO - Train Epoch: 30 [40960/60000 (68%)]	Loss: 0.442116
+2019-05-16 00:26:01,550 - INFO - Train Epoch: 30 [46080/60000 (76%)]	Loss: 0.408215
+2019-05-16 00:26:05,443 - INFO - Train Epoch: 30 [51200/60000 (85%)]	Loss: 0.419750
+2019-05-16 00:26:09,380 - INFO - Train Epoch: 30 [56320/60000 (93%)]	Loss: 0.436644
+2019-05-16 00:26:12,150 - INFO - Train Epoch: 30 took 0 days, 0 hours, 0 minutes, 47 seconds
+2019-05-16 00:26:24,732 - INFO - Train set: Average loss: 0.5525, Accuracy: 73.86%
+2019-05-16 00:26:26,837 - INFO - Test  set: Average loss: 0.5614, Accuracy: 73.45%
+2019-05-16 00:26:26,837 - INFO - Epoch 31: Reducing learning rate by 0.5 to 5e-05
+2019-05-16 00:26:27,214 - INFO - Train Epoch: 31 [    0/60000 (0%)]	Loss: 0.548685
+2019-05-16 00:26:31,206 - INFO - Train Epoch: 31 [ 5120/60000 (8%)]	Loss: 0.504945
+2019-05-16 00:26:35,213 - INFO - Train Epoch: 31 [10240/60000 (17%)]	Loss: 0.481219
+2019-05-16 00:26:39,209 - INFO - Train Epoch: 31 [15360/60000 (25%)]	Loss: 0.521182
+2019-05-16 00:26:43,218 - INFO - Train Epoch: 31 [20480/60000 (34%)]	Loss: 0.496546
+2019-05-16 00:26:47,048 - INFO - Train Epoch: 31 [25600/60000 (42%)]	Loss: 0.487008
+2019-05-16 00:26:51,080 - INFO - Train Epoch: 31 [30720/60000 (51%)]	Loss: 0.483112
+2019-05-16 00:26:55,077 - INFO - Train Epoch: 31 [35840/60000 (59%)]	Loss: 0.499132
+2019-05-16 00:26:59,154 - INFO - Train Epoch: 31 [40960/60000 (68%)]	Loss: 0.491139
+2019-05-16 00:27:03,063 - INFO - Train Epoch: 31 [46080/60000 (76%)]	Loss: 0.462174
+2019-05-16 00:27:07,005 - INFO - Train Epoch: 31 [51200/60000 (85%)]	Loss: 0.474917
+2019-05-16 00:27:11,000 - INFO - Train Epoch: 31 [56320/60000 (93%)]	Loss: 0.484541
+2019-05-16 00:27:13,723 - INFO - Train Epoch: 31 took 0 days, 0 hours, 0 minutes, 47 seconds
+2019-05-16 00:27:25,935 - INFO - Train set: Average loss: 0.4699, Accuracy: 76.93%
+2019-05-16 00:27:27,974 - INFO - Test  set: Average loss: 0.4722, Accuracy: 76.77%
+2019-05-16 00:27:27,974 - INFO - Epoch 32: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:27:28,378 - INFO - Train Epoch: 32 [    0/60000 (0%)]	Loss: 0.468363
+2019-05-16 00:27:32,411 - INFO - Train Epoch: 32 [ 5120/60000 (8%)]	Loss: 0.480227
+2019-05-16 00:27:36,407 - INFO - Train Epoch: 32 [10240/60000 (17%)]	Loss: 0.465939
+2019-05-16 00:27:40,336 - INFO - Train Epoch: 32 [15360/60000 (25%)]	Loss: 0.474105
+2019-05-16 00:27:44,193 - INFO - Train Epoch: 32 [20480/60000 (34%)]	Loss: 0.466714
+2019-05-16 00:27:48,008 - INFO - Train Epoch: 32 [25600/60000 (42%)]	Loss: 0.452876
+2019-05-16 00:27:52,097 - INFO - Train Epoch: 32 [30720/60000 (51%)]	Loss: 0.465740
+2019-05-16 00:27:56,111 - INFO - Train Epoch: 32 [35840/60000 (59%)]	Loss: 0.480235
+2019-05-16 00:28:00,157 - INFO - Train Epoch: 32 [40960/60000 (68%)]	Loss: 0.474699
+2019-05-16 00:28:04,291 - INFO - Train Epoch: 32 [46080/60000 (76%)]	Loss: 0.442397
+2019-05-16 00:28:08,372 - INFO - Train Epoch: 32 [51200/60000 (85%)]	Loss: 0.457539
+2019-05-16 00:28:12,448 - INFO - Train Epoch: 32 [56320/60000 (93%)]	Loss: 0.469103
+2019-05-16 00:28:15,198 - INFO - Train Epoch: 32 took 0 days, 0 hours, 0 minutes, 47 seconds
+2019-05-16 00:28:27,772 - INFO - Train set: Average loss: 0.4542, Accuracy: 77.84%
+2019-05-16 00:28:29,903 - INFO - Test  set: Average loss: 0.4593, Accuracy: 77.61%
+2019-05-16 00:28:29,904 - INFO - Epoch 33: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:28:30,317 - INFO - Train Epoch: 33 [    0/60000 (0%)]	Loss: 0.451315
+2019-05-16 00:28:34,340 - INFO - Train Epoch: 33 [ 5120/60000 (8%)]	Loss: 0.468434
+2019-05-16 00:28:38,477 - INFO - Train Epoch: 33 [10240/60000 (17%)]	Loss: 0.451808
+2019-05-16 00:28:42,613 - INFO - Train Epoch: 33 [15360/60000 (25%)]	Loss: 0.457721
+2019-05-16 00:28:46,704 - INFO - Train Epoch: 33 [20480/60000 (34%)]	Loss: 0.454819
+2019-05-16 00:28:50,828 - INFO - Train Epoch: 33 [25600/60000 (42%)]	Loss: 0.441750
+2019-05-16 00:28:54,822 - INFO - Train Epoch: 33 [30720/60000 (51%)]	Loss: 0.454082
+2019-05-16 00:28:58,907 - INFO - Train Epoch: 33 [35840/60000 (59%)]	Loss: 0.467649
+2019-05-16 00:29:02,892 - INFO - Train Epoch: 33 [40960/60000 (68%)]	Loss: 0.466445
+2019-05-16 00:29:06,917 - INFO - Train Epoch: 33 [46080/60000 (76%)]	Loss: 0.430441
+2019-05-16 00:29:10,929 - INFO - Train Epoch: 33 [51200/60000 (85%)]	Loss: 0.446584
+2019-05-16 00:29:14,989 - INFO - Train Epoch: 33 [56320/60000 (93%)]	Loss: 0.457365
+2019-05-16 00:29:17,700 - INFO - Train Epoch: 33 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:29:29,797 - INFO - Train set: Average loss: 0.4437, Accuracy: 78.50%
+2019-05-16 00:29:31,908 - INFO - Test  set: Average loss: 0.4517, Accuracy: 78.01%
+2019-05-16 00:29:31,909 - INFO - Epoch 34: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:29:32,326 - INFO - Train Epoch: 34 [    0/60000 (0%)]	Loss: 0.440594
+2019-05-16 00:29:36,454 - INFO - Train Epoch: 34 [ 5120/60000 (8%)]	Loss: 0.458843
+2019-05-16 00:29:40,565 - INFO - Train Epoch: 34 [10240/60000 (17%)]	Loss: 0.442809
+2019-05-16 00:29:44,657 - INFO - Train Epoch: 34 [15360/60000 (25%)]	Loss: 0.445874
+2019-05-16 00:29:48,809 - INFO - Train Epoch: 34 [20480/60000 (34%)]	Loss: 0.448484
+2019-05-16 00:29:52,945 - INFO - Train Epoch: 34 [25600/60000 (42%)]	Loss: 0.433236
+2019-05-16 00:29:57,104 - INFO - Train Epoch: 34 [30720/60000 (51%)]	Loss: 0.446999
+2019-05-16 00:30:01,239 - INFO - Train Epoch: 34 [35840/60000 (59%)]	Loss: 0.457741
+2019-05-16 00:30:05,412 - INFO - Train Epoch: 34 [40960/60000 (68%)]	Loss: 0.459481
+2019-05-16 00:30:09,499 - INFO - Train Epoch: 34 [46080/60000 (76%)]	Loss: 0.421094
+2019-05-16 00:30:13,609 - INFO - Train Epoch: 34 [51200/60000 (85%)]	Loss: 0.438464
+2019-05-16 00:30:17,648 - INFO - Train Epoch: 34 [56320/60000 (93%)]	Loss: 0.451282
+2019-05-16 00:30:20,463 - INFO - Train Epoch: 34 took 0 days, 0 hours, 0 minutes, 49 seconds
+2019-05-16 00:30:32,831 - INFO - Train set: Average loss: 0.4367, Accuracy: 78.90%
+2019-05-16 00:30:34,931 - INFO - Test  set: Average loss: 0.4467, Accuracy: 78.29%
+2019-05-16 00:30:34,931 - INFO - Epoch 35: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:30:35,346 - INFO - Train Epoch: 35 [    0/60000 (0%)]	Loss: 0.434509
+2019-05-16 00:30:39,321 - INFO - Train Epoch: 35 [ 5120/60000 (8%)]	Loss: 0.450444
+2019-05-16 00:30:43,427 - INFO - Train Epoch: 35 [10240/60000 (17%)]	Loss: 0.436406
+2019-05-16 00:30:47,487 - INFO - Train Epoch: 35 [15360/60000 (25%)]	Loss: 0.440393
+2019-05-16 00:30:51,558 - INFO - Train Epoch: 35 [20480/60000 (34%)]	Loss: 0.442414
+2019-05-16 00:30:55,381 - INFO - Train Epoch: 35 [25600/60000 (42%)]	Loss: 0.426114
+2019-05-16 00:30:59,125 - INFO - Train Epoch: 35 [30720/60000 (51%)]	Loss: 0.442516
+2019-05-16 00:31:02,856 - INFO - Train Epoch: 35 [35840/60000 (59%)]	Loss: 0.451547
+2019-05-16 00:31:06,565 - INFO - Train Epoch: 35 [40960/60000 (68%)]	Loss: 0.452054
+2019-05-16 00:31:10,298 - INFO - Train Epoch: 35 [46080/60000 (76%)]	Loss: 0.416386
+2019-05-16 00:31:14,001 - INFO - Train Epoch: 35 [51200/60000 (85%)]	Loss: 0.433283
+2019-05-16 00:31:17,775 - INFO - Train Epoch: 35 [56320/60000 (93%)]	Loss: 0.444761
+2019-05-16 00:31:20,322 - INFO - Train Epoch: 35 took 0 days, 0 hours, 0 minutes, 45 seconds
+2019-05-16 00:31:32,608 - INFO - Train set: Average loss: 0.4309, Accuracy: 79.25%
+2019-05-16 00:31:34,650 - INFO - Test  set: Average loss: 0.4428, Accuracy: 78.63%
+2019-05-16 00:31:34,651 - INFO - Epoch 36: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:31:35,016 - INFO - Train Epoch: 36 [    0/60000 (0%)]	Loss: 0.429082
+2019-05-16 00:31:38,855 - INFO - Train Epoch: 36 [ 5120/60000 (8%)]	Loss: 0.445110
+2019-05-16 00:31:42,750 - INFO - Train Epoch: 36 [10240/60000 (17%)]	Loss: 0.431310
+2019-05-16 00:31:46,508 - INFO - Train Epoch: 36 [15360/60000 (25%)]	Loss: 0.433588
+2019-05-16 00:31:50,291 - INFO - Train Epoch: 36 [20480/60000 (34%)]	Loss: 0.439012
+2019-05-16 00:31:54,074 - INFO - Train Epoch: 36 [25600/60000 (42%)]	Loss: 0.421336
+2019-05-16 00:31:57,967 - INFO - Train Epoch: 36 [30720/60000 (51%)]	Loss: 0.438781
+2019-05-16 00:32:01,847 - INFO - Train Epoch: 36 [35840/60000 (59%)]	Loss: 0.447360
+2019-05-16 00:32:05,593 - INFO - Train Epoch: 36 [40960/60000 (68%)]	Loss: 0.446887
+2019-05-16 00:32:09,356 - INFO - Train Epoch: 36 [46080/60000 (76%)]	Loss: 0.411119
+2019-05-16 00:32:13,240 - INFO - Train Epoch: 36 [51200/60000 (85%)]	Loss: 0.428333
+2019-05-16 00:32:17,029 - INFO - Train Epoch: 36 [56320/60000 (93%)]	Loss: 0.440906
+2019-05-16 00:32:19,508 - INFO - Train Epoch: 36 took 0 days, 0 hours, 0 minutes, 45 seconds
+2019-05-16 00:32:31,533 - INFO - Train set: Average loss: 0.4265, Accuracy: 79.52%
+2019-05-16 00:32:33,544 - INFO - Test  set: Average loss: 0.4405, Accuracy: 78.80%
+2019-05-16 00:32:33,544 - INFO - Epoch 37: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:32:33,916 - INFO - Train Epoch: 37 [    0/60000 (0%)]	Loss: 0.424936
+2019-05-16 00:32:37,757 - INFO - Train Epoch: 37 [ 5120/60000 (8%)]	Loss: 0.440650
+2019-05-16 00:32:41,755 - INFO - Train Epoch: 37 [10240/60000 (17%)]	Loss: 0.427729
+2019-05-16 00:32:45,802 - INFO - Train Epoch: 37 [15360/60000 (25%)]	Loss: 0.430131
+2019-05-16 00:32:49,829 - INFO - Train Epoch: 37 [20480/60000 (34%)]	Loss: 0.435683
+2019-05-16 00:32:53,865 - INFO - Train Epoch: 37 [25600/60000 (42%)]	Loss: 0.416928
+2019-05-16 00:32:57,892 - INFO - Train Epoch: 37 [30720/60000 (51%)]	Loss: 0.435658
+2019-05-16 00:33:02,050 - INFO - Train Epoch: 37 [35840/60000 (59%)]	Loss: 0.442044
+2019-05-16 00:33:06,085 - INFO - Train Epoch: 37 [40960/60000 (68%)]	Loss: 0.444527
+2019-05-16 00:33:10,166 - INFO - Train Epoch: 37 [46080/60000 (76%)]	Loss: 0.407396
+2019-05-16 00:33:14,195 - INFO - Train Epoch: 37 [51200/60000 (85%)]	Loss: 0.425900
+2019-05-16 00:33:18,315 - INFO - Train Epoch: 37 [56320/60000 (93%)]	Loss: 0.436588
+2019-05-16 00:33:21,066 - INFO - Train Epoch: 37 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:33:33,450 - INFO - Train set: Average loss: 0.4231, Accuracy: 79.73%
+2019-05-16 00:33:35,602 - INFO - Test  set: Average loss: 0.4389, Accuracy: 78.85%
+2019-05-16 00:33:35,602 - INFO - Epoch 38: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:33:36,028 - INFO - Train Epoch: 38 [    0/60000 (0%)]	Loss: 0.422217
+2019-05-16 00:33:40,115 - INFO - Train Epoch: 38 [ 5120/60000 (8%)]	Loss: 0.435671
+2019-05-16 00:33:44,190 - INFO - Train Epoch: 38 [10240/60000 (17%)]	Loss: 0.423427
+2019-05-16 00:33:48,295 - INFO - Train Epoch: 38 [15360/60000 (25%)]	Loss: 0.428737
+2019-05-16 00:33:52,245 - INFO - Train Epoch: 38 [20480/60000 (34%)]	Loss: 0.431587
+2019-05-16 00:33:56,340 - INFO - Train Epoch: 38 [25600/60000 (42%)]	Loss: 0.412314
+2019-05-16 00:34:00,349 - INFO - Train Epoch: 38 [30720/60000 (51%)]	Loss: 0.430161
+2019-05-16 00:34:04,405 - INFO - Train Epoch: 38 [35840/60000 (59%)]	Loss: 0.439694
+2019-05-16 00:34:08,391 - INFO - Train Epoch: 38 [40960/60000 (68%)]	Loss: 0.439468
+2019-05-16 00:34:12,405 - INFO - Train Epoch: 38 [46080/60000 (76%)]	Loss: 0.401796
+2019-05-16 00:34:16,416 - INFO - Train Epoch: 38 [51200/60000 (85%)]	Loss: 0.421481
+2019-05-16 00:34:20,503 - INFO - Train Epoch: 38 [56320/60000 (93%)]	Loss: 0.433160
+2019-05-16 00:34:23,234 - INFO - Train Epoch: 38 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:34:35,925 - INFO - Train set: Average loss: 0.4193, Accuracy: 79.94%
+2019-05-16 00:34:38,058 - INFO - Test  set: Average loss: 0.4377, Accuracy: 78.94%
+2019-05-16 00:34:38,059 - INFO - Epoch 39: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:34:38,482 - INFO - Train Epoch: 39 [    0/60000 (0%)]	Loss: 0.416921
+2019-05-16 00:34:42,535 - INFO - Train Epoch: 39 [ 5120/60000 (8%)]	Loss: 0.432640
+2019-05-16 00:34:46,571 - INFO - Train Epoch: 39 [10240/60000 (17%)]	Loss: 0.420248
+2019-05-16 00:34:50,665 - INFO - Train Epoch: 39 [15360/60000 (25%)]	Loss: 0.423577
+2019-05-16 00:34:54,653 - INFO - Train Epoch: 39 [20480/60000 (34%)]	Loss: 0.428756
+2019-05-16 00:34:58,698 - INFO - Train Epoch: 39 [25600/60000 (42%)]	Loss: 0.410283
+2019-05-16 00:35:02,926 - INFO - Train Epoch: 39 [30720/60000 (51%)]	Loss: 0.426191
+2019-05-16 00:35:07,069 - INFO - Train Epoch: 39 [35840/60000 (59%)]	Loss: 0.437715
+2019-05-16 00:35:11,130 - INFO - Train Epoch: 39 [40960/60000 (68%)]	Loss: 0.435295
+2019-05-16 00:35:15,147 - INFO - Train Epoch: 39 [46080/60000 (76%)]	Loss: 0.396663
+2019-05-16 00:35:19,271 - INFO - Train Epoch: 39 [51200/60000 (85%)]	Loss: 0.418509
+2019-05-16 00:35:23,326 - INFO - Train Epoch: 39 [56320/60000 (93%)]	Loss: 0.428900
+2019-05-16 00:35:26,027 - INFO - Train Epoch: 39 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:35:38,174 - INFO - Train set: Average loss: 0.4164, Accuracy: 80.10%
+2019-05-16 00:35:40,235 - INFO - Test  set: Average loss: 0.4372, Accuracy: 79.01%
+2019-05-16 00:35:40,235 - INFO - Epoch 40: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:35:40,645 - INFO - Train Epoch: 40 [    0/60000 (0%)]	Loss: 0.414663
+2019-05-16 00:35:44,720 - INFO - Train Epoch: 40 [ 5120/60000 (8%)]	Loss: 0.427379
+2019-05-16 00:35:48,774 - INFO - Train Epoch: 40 [10240/60000 (17%)]	Loss: 0.416912
+2019-05-16 00:35:52,893 - INFO - Train Epoch: 40 [15360/60000 (25%)]	Loss: 0.420737
+2019-05-16 00:35:56,981 - INFO - Train Epoch: 40 [20480/60000 (34%)]	Loss: 0.425435
+2019-05-16 00:36:01,228 - INFO - Train Epoch: 40 [25600/60000 (42%)]	Loss: 0.408380
+2019-05-16 00:36:05,392 - INFO - Train Epoch: 40 [30720/60000 (51%)]	Loss: 0.422833
+2019-05-16 00:36:09,517 - INFO - Train Epoch: 40 [35840/60000 (59%)]	Loss: 0.433839
+2019-05-16 00:36:13,628 - INFO - Train Epoch: 40 [40960/60000 (68%)]	Loss: 0.433921
+2019-05-16 00:36:17,727 - INFO - Train Epoch: 40 [46080/60000 (76%)]	Loss: 0.394157
+2019-05-16 00:36:21,734 - INFO - Train Epoch: 40 [51200/60000 (85%)]	Loss: 0.414519
+2019-05-16 00:36:25,887 - INFO - Train Epoch: 40 [56320/60000 (93%)]	Loss: 0.426588
+2019-05-16 00:36:28,591 - INFO - Train Epoch: 40 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:36:40,831 - INFO - Train set: Average loss: 0.4134, Accuracy: 80.29%
+2019-05-16 00:36:42,966 - INFO - Test  set: Average loss: 0.4360, Accuracy: 79.11%
+2019-05-16 00:36:42,966 - INFO - Epoch 41: Reducing learning rate by 0.5 to 2.5e-05
+2019-05-16 00:36:43,386 - INFO - Train Epoch: 41 [    0/60000 (0%)]	Loss: 0.410111
+2019-05-16 00:36:47,562 - INFO - Train Epoch: 41 [ 5120/60000 (8%)]	Loss: 0.418320
+2019-05-16 00:36:51,650 - INFO - Train Epoch: 41 [10240/60000 (17%)]	Loss: 0.405686
+2019-05-16 00:36:55,716 - INFO - Train Epoch: 41 [15360/60000 (25%)]	Loss: 0.418388
+2019-05-16 00:36:59,739 - INFO - Train Epoch: 41 [20480/60000 (34%)]	Loss: 0.414267
+2019-05-16 00:37:03,789 - INFO - Train Epoch: 41 [25600/60000 (42%)]	Loss: 0.401504
+2019-05-16 00:37:07,862 - INFO - Train Epoch: 41 [30720/60000 (51%)]	Loss: 0.413122
+2019-05-16 00:37:11,985 - INFO - Train Epoch: 41 [35840/60000 (59%)]	Loss: 0.428188
+2019-05-16 00:37:16,108 - INFO - Train Epoch: 41 [40960/60000 (68%)]	Loss: 0.422760
+2019-05-16 00:37:20,164 - INFO - Train Epoch: 41 [46080/60000 (76%)]	Loss: 0.385631
+2019-05-16 00:37:24,307 - INFO - Train Epoch: 41 [51200/60000 (85%)]	Loss: 0.406920
+2019-05-16 00:37:28,289 - INFO - Train Epoch: 41 [56320/60000 (93%)]	Loss: 0.417275
+2019-05-16 00:37:31,028 - INFO - Train Epoch: 41 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:37:43,767 - INFO - Train set: Average loss: 0.4056, Accuracy: 80.75%
+2019-05-16 00:37:45,859 - INFO - Test  set: Average loss: 0.4333, Accuracy: 79.31%
+2019-05-16 00:37:45,859 - INFO - Epoch 42: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:37:46,276 - INFO - Train Epoch: 42 [    0/60000 (0%)]	Loss: 0.404069
+2019-05-16 00:37:50,238 - INFO - Train Epoch: 42 [ 5120/60000 (8%)]	Loss: 0.413964
+2019-05-16 00:37:54,223 - INFO - Train Epoch: 42 [10240/60000 (17%)]	Loss: 0.403437
+2019-05-16 00:37:58,190 - INFO - Train Epoch: 42 [15360/60000 (25%)]	Loss: 0.414626
+2019-05-16 00:38:02,204 - INFO - Train Epoch: 42 [20480/60000 (34%)]	Loss: 0.410037
+2019-05-16 00:38:06,185 - INFO - Train Epoch: 42 [25600/60000 (42%)]	Loss: 0.397133
+2019-05-16 00:38:10,274 - INFO - Train Epoch: 42 [30720/60000 (51%)]	Loss: 0.408798
+2019-05-16 00:38:14,475 - INFO - Train Epoch: 42 [35840/60000 (59%)]	Loss: 0.424703
+2019-05-16 00:38:18,564 - INFO - Train Epoch: 42 [40960/60000 (68%)]	Loss: 0.420373
+2019-05-16 00:38:22,544 - INFO - Train Epoch: 42 [46080/60000 (76%)]	Loss: 0.383340
+2019-05-16 00:38:26,642 - INFO - Train Epoch: 42 [51200/60000 (85%)]	Loss: 0.405286
+2019-05-16 00:38:30,738 - INFO - Train Epoch: 42 [56320/60000 (93%)]	Loss: 0.413753
+2019-05-16 00:38:33,432 - INFO - Train Epoch: 42 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:38:45,494 - INFO - Train set: Average loss: 0.4032, Accuracy: 80.90%
+2019-05-16 00:38:47,576 - INFO - Test  set: Average loss: 0.4335, Accuracy: 79.27%
+2019-05-16 00:38:47,577 - INFO - Epoch 43: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:38:47,988 - INFO - Train Epoch: 43 [    0/60000 (0%)]	Loss: 0.401866
+2019-05-16 00:38:52,124 - INFO - Train Epoch: 43 [ 5120/60000 (8%)]	Loss: 0.409798
+2019-05-16 00:38:56,148 - INFO - Train Epoch: 43 [10240/60000 (17%)]	Loss: 0.399479
+2019-05-16 00:39:00,205 - INFO - Train Epoch: 43 [15360/60000 (25%)]	Loss: 0.413322
+2019-05-16 00:39:04,302 - INFO - Train Epoch: 43 [20480/60000 (34%)]	Loss: 0.407712
+2019-05-16 00:39:08,307 - INFO - Train Epoch: 43 [25600/60000 (42%)]	Loss: 0.395430
+2019-05-16 00:39:12,341 - INFO - Train Epoch: 43 [30720/60000 (51%)]	Loss: 0.405209
+2019-05-16 00:39:16,423 - INFO - Train Epoch: 43 [35840/60000 (59%)]	Loss: 0.421365
+2019-05-16 00:39:20,470 - INFO - Train Epoch: 43 [40960/60000 (68%)]	Loss: 0.416794
+2019-05-16 00:39:24,472 - INFO - Train Epoch: 43 [46080/60000 (76%)]	Loss: 0.380727
+2019-05-16 00:39:28,498 - INFO - Train Epoch: 43 [51200/60000 (85%)]	Loss: 0.402684
+2019-05-16 00:39:32,619 - INFO - Train Epoch: 43 [56320/60000 (93%)]	Loss: 0.411672
+2019-05-16 00:39:35,438 - INFO - Train Epoch: 43 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:39:47,914 - INFO - Train set: Average loss: 0.4007, Accuracy: 81.07%
+2019-05-16 00:39:50,023 - INFO - Test  set: Average loss: 0.4337, Accuracy: 79.34%
+2019-05-16 00:39:50,024 - INFO - Epoch 44: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:39:50,436 - INFO - Train Epoch: 44 [    0/60000 (0%)]	Loss: 0.398249
+2019-05-16 00:39:54,586 - INFO - Train Epoch: 44 [ 5120/60000 (8%)]	Loss: 0.406297
+2019-05-16 00:39:58,686 - INFO - Train Epoch: 44 [10240/60000 (17%)]	Loss: 0.396510
+2019-05-16 00:40:02,923 - INFO - Train Epoch: 44 [15360/60000 (25%)]	Loss: 0.410656
+2019-05-16 00:40:07,014 - INFO - Train Epoch: 44 [20480/60000 (34%)]	Loss: 0.404550
+2019-05-16 00:40:11,000 - INFO - Train Epoch: 44 [25600/60000 (42%)]	Loss: 0.392361
+2019-05-16 00:40:15,159 - INFO - Train Epoch: 44 [30720/60000 (51%)]	Loss: 0.401635
+2019-05-16 00:40:19,236 - INFO - Train Epoch: 44 [35840/60000 (59%)]	Loss: 0.419449
+2019-05-16 00:40:23,239 - INFO - Train Epoch: 44 [40960/60000 (68%)]	Loss: 0.413872
+2019-05-16 00:40:27,378 - INFO - Train Epoch: 44 [46080/60000 (76%)]	Loss: 0.379090
+2019-05-16 00:40:31,463 - INFO - Train Epoch: 44 [51200/60000 (85%)]	Loss: 0.400488
+2019-05-16 00:40:35,587 - INFO - Train Epoch: 44 [56320/60000 (93%)]	Loss: 0.408570
+2019-05-16 00:40:38,429 - INFO - Train Epoch: 44 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:40:50,949 - INFO - Train set: Average loss: 0.3982, Accuracy: 81.19%
+2019-05-16 00:40:53,059 - INFO - Test  set: Average loss: 0.4342, Accuracy: 79.26%
+2019-05-16 00:40:53,060 - INFO - Epoch 45: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:40:53,495 - INFO - Train Epoch: 45 [    0/60000 (0%)]	Loss: 0.395671
+2019-05-16 00:40:57,692 - INFO - Train Epoch: 45 [ 5120/60000 (8%)]	Loss: 0.403478
+2019-05-16 00:41:01,740 - INFO - Train Epoch: 45 [10240/60000 (17%)]	Loss: 0.394022
+2019-05-16 00:41:05,834 - INFO - Train Epoch: 45 [15360/60000 (25%)]	Loss: 0.408296
+2019-05-16 00:41:10,012 - INFO - Train Epoch: 45 [20480/60000 (34%)]	Loss: 0.402338
+2019-05-16 00:41:14,274 - INFO - Train Epoch: 45 [25600/60000 (42%)]	Loss: 0.388248
+2019-05-16 00:41:18,296 - INFO - Train Epoch: 45 [30720/60000 (51%)]	Loss: 0.397876
+2019-05-16 00:41:22,409 - INFO - Train Epoch: 45 [35840/60000 (59%)]	Loss: 0.416979
+2019-05-16 00:41:26,557 - INFO - Train Epoch: 45 [40960/60000 (68%)]	Loss: 0.411243
+2019-05-16 00:41:30,658 - INFO - Train Epoch: 45 [46080/60000 (76%)]	Loss: 0.376149
+2019-05-16 00:41:34,673 - INFO - Train Epoch: 45 [51200/60000 (85%)]	Loss: 0.397331
+2019-05-16 00:41:38,805 - INFO - Train Epoch: 45 [56320/60000 (93%)]	Loss: 0.407046
+2019-05-16 00:41:41,479 - INFO - Train Epoch: 45 took 0 days, 0 hours, 0 minutes, 48 seconds
+2019-05-16 00:41:53,966 - INFO - Train set: Average loss: 0.3963, Accuracy: 81.29%
+2019-05-16 00:41:56,003 - INFO - Test  set: Average loss: 0.4349, Accuracy: 79.22%
+2019-05-16 00:41:56,003 - INFO - Epoch 46: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:41:56,407 - INFO - Train Epoch: 46 [    0/60000 (0%)]	Loss: 0.392884
+2019-05-16 00:42:00,472 - INFO - Train Epoch: 46 [ 5120/60000 (8%)]	Loss: 0.401556
+2019-05-16 00:42:04,637 - INFO - Train Epoch: 46 [10240/60000 (17%)]	Loss: 0.391362
+2019-05-16 00:42:08,747 - INFO - Train Epoch: 46 [15360/60000 (25%)]	Loss: 0.406345
+2019-05-16 00:42:12,813 - INFO - Train Epoch: 46 [20480/60000 (34%)]	Loss: 0.398738
+2019-05-16 00:42:16,600 - INFO - Train Epoch: 46 [25600/60000 (42%)]	Loss: 0.386697
+2019-05-16 00:42:20,400 - INFO - Train Epoch: 46 [30720/60000 (51%)]	Loss: 0.393275
+2019-05-16 00:42:24,282 - INFO - Train Epoch: 46 [35840/60000 (59%)]	Loss: 0.413979
+2019-05-16 00:42:28,122 - INFO - Train Epoch: 46 [40960/60000 (68%)]	Loss: 0.408828
+2019-05-16 00:42:31,983 - INFO - Train Epoch: 46 [46080/60000 (76%)]	Loss: 0.374457
+2019-05-16 00:42:35,826 - INFO - Train Epoch: 46 [51200/60000 (85%)]	Loss: 0.396103
+2019-05-16 00:42:39,702 - INFO - Train Epoch: 46 [56320/60000 (93%)]	Loss: 0.403202
+2019-05-16 00:42:42,299 - INFO - Train Epoch: 46 took 0 days, 0 hours, 0 minutes, 46 seconds
+2019-05-16 00:42:54,586 - INFO - Train set: Average loss: 0.3935, Accuracy: 81.48%
+2019-05-16 00:42:56,671 - INFO - Test  set: Average loss: 0.4351, Accuracy: 79.28%
+2019-05-16 00:42:56,671 - INFO - Epoch 47: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:42:57,053 - INFO - Train Epoch: 47 [    0/60000 (0%)]	Loss: 0.388600
+2019-05-16 00:43:00,833 - INFO - Train Epoch: 47 [ 5120/60000 (8%)]	Loss: 0.397499
+2019-05-16 00:43:04,633 - INFO - Train Epoch: 47 [10240/60000 (17%)]	Loss: 0.388928
+2019-05-16 00:43:08,449 - INFO - Train Epoch: 47 [15360/60000 (25%)]	Loss: 0.403806
+2019-05-16 00:43:12,395 - INFO - Train Epoch: 47 [20480/60000 (34%)]	Loss: 0.395831
+2019-05-16 00:43:16,236 - INFO - Train Epoch: 47 [25600/60000 (42%)]	Loss: 0.383422
+2019-05-16 00:43:20,102 - INFO - Train Epoch: 47 [30720/60000 (51%)]	Loss: 0.390951
+2019-05-16 00:43:23,949 - INFO - Train Epoch: 47 [35840/60000 (59%)]	Loss: 0.412745
+2019-05-16 00:43:27,759 - INFO - Train Epoch: 47 [40960/60000 (68%)]	Loss: 0.404833
+2019-05-16 00:43:31,601 - INFO - Train Epoch: 47 [46080/60000 (76%)]	Loss: 0.372071
+2019-05-16 00:43:35,400 - INFO - Train Epoch: 47 [51200/60000 (85%)]	Loss: 0.392648
+2019-05-16 00:43:39,163 - INFO - Train Epoch: 47 [56320/60000 (93%)]	Loss: 0.400338
+2019-05-16 00:43:41,733 - INFO - Train Epoch: 47 took 0 days, 0 hours, 0 minutes, 45 seconds
+2019-05-16 00:43:54,224 - INFO - Train set: Average loss: 0.3916, Accuracy: 81.58%
+2019-05-16 00:43:56,370 - INFO - Test  set: Average loss: 0.4357, Accuracy: 79.20%
+2019-05-16 00:43:56,370 - INFO - Epoch 48: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:43:56,755 - INFO - Train Epoch: 48 [    0/60000 (0%)]	Loss: 0.386455
+2019-05-16 00:44:00,612 - INFO - Train Epoch: 48 [ 5120/60000 (8%)]	Loss: 0.393885
+2019-05-16 00:44:04,406 - INFO - Train Epoch: 48 [10240/60000 (17%)]	Loss: 0.387779
+2019-05-16 00:44:08,161 - INFO - Train Epoch: 48 [15360/60000 (25%)]	Loss: 0.400756
+2019-05-16 00:44:11,925 - INFO - Train Epoch: 48 [20480/60000 (34%)]	Loss: 0.394288
+2019-05-16 00:44:15,758 - INFO - Train Epoch: 48 [25600/60000 (42%)]	Loss: 0.379517
+2019-05-16 00:44:19,484 - INFO - Train Epoch: 48 [30720/60000 (51%)]	Loss: 0.387398
+2019-05-16 00:44:23,205 - INFO - Train Epoch: 48 [35840/60000 (59%)]	Loss: 0.409759
+2019-05-16 00:44:27,092 - INFO - Train Epoch: 48 [40960/60000 (68%)]	Loss: 0.401651
+2019-05-16 00:44:30,829 - INFO - Train Epoch: 48 [46080/60000 (76%)]	Loss: 0.370425
+2019-05-16 00:44:34,637 - INFO - Train Epoch: 48 [51200/60000 (85%)]	Loss: 0.391333
+2019-05-16 00:44:38,444 - INFO - Train Epoch: 48 [56320/60000 (93%)]	Loss: 0.397898
+2019-05-16 00:44:41,039 - INFO - Train Epoch: 48 took 0 days, 0 hours, 0 minutes, 45 seconds
+2019-05-16 00:44:53,583 - INFO - Train set: Average loss: 0.3891, Accuracy: 81.73%
+2019-05-16 00:44:55,720 - INFO - Test  set: Average loss: 0.4371, Accuracy: 79.22%
+2019-05-16 00:44:55,720 - INFO - Epoch 49: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:44:56,094 - INFO - Train Epoch: 49 [    0/60000 (0%)]	Loss: 0.382775
+2019-05-16 00:44:59,861 - INFO - Train Epoch: 49 [ 5120/60000 (8%)]	Loss: 0.389959
+2019-05-16 00:45:03,666 - INFO - Train Epoch: 49 [10240/60000 (17%)]	Loss: 0.383245
+2019-05-16 00:45:07,489 - INFO - Train Epoch: 49 [15360/60000 (25%)]	Loss: 0.398559
+2019-05-16 00:45:11,292 - INFO - Train Epoch: 49 [20480/60000 (34%)]	Loss: 0.390770
+2019-05-16 00:45:15,038 - INFO - Train Epoch: 49 [25600/60000 (42%)]	Loss: 0.377746
+2019-05-16 00:45:18,793 - INFO - Train Epoch: 49 [30720/60000 (51%)]	Loss: 0.385773
+2019-05-16 00:45:22,621 - INFO - Train Epoch: 49 [35840/60000 (59%)]	Loss: 0.405934
+2019-05-16 00:45:26,442 - INFO - Train Epoch: 49 [40960/60000 (68%)]	Loss: 0.398360
+2019-05-16 00:45:30,238 - INFO - Train Epoch: 49 [46080/60000 (76%)]	Loss: 0.367981
+2019-05-16 00:45:34,032 - INFO - Train Epoch: 49 [51200/60000 (85%)]	Loss: 0.388446
+2019-05-16 00:45:37,815 - INFO - Train Epoch: 49 [56320/60000 (93%)]	Loss: 0.394956
+2019-05-16 00:45:40,388 - INFO - Train Epoch: 49 took 0 days, 0 hours, 0 minutes, 45 seconds
+2019-05-16 00:45:52,844 - INFO - Train set: Average loss: 0.3869, Accuracy: 81.88%
+2019-05-16 00:45:54,943 - INFO - Test  set: Average loss: 0.4385, Accuracy: 79.19%
+2019-05-16 00:45:54,943 - INFO - Epoch 50: Reducing learning rate by 0.5 to 1.25e-05
+2019-05-16 00:45:55,317 - INFO - Train Epoch: 50 [    0/60000 (0%)]	Loss: 0.379105
+2019-05-16 00:45:59,103 - INFO - Train Epoch: 50 [ 5120/60000 (8%)]	Loss: 0.385935
+2019-05-16 00:46:02,952 - INFO - Train Epoch: 50 [10240/60000 (17%)]	Loss: 0.380212
+2019-05-16 00:46:06,876 - INFO - Train Epoch: 50 [15360/60000 (25%)]	Loss: 0.394250
+2019-05-16 00:46:10,781 - INFO - Train Epoch: 50 [20480/60000 (34%)]	Loss: 0.388648
+2019-05-16 00:46:14,556 - INFO - Train Epoch: 50 [25600/60000 (42%)]	Loss: 0.373836
+2019-05-16 00:46:18,338 - INFO - Train Epoch: 50 [30720/60000 (51%)]	Loss: 0.384035
+2019-05-16 00:46:22,205 - INFO - Train Epoch: 50 [35840/60000 (59%)]	Loss: 0.403754
+2019-05-16 00:46:26,242 - INFO - Train Epoch: 50 [40960/60000 (68%)]	Loss: 0.394644
+2019-05-16 00:46:30,211 - INFO - Train Epoch: 50 [46080/60000 (76%)]	Loss: 0.363818
+2019-05-16 00:46:34,340 - INFO - Train Epoch: 50 [51200/60000 (85%)]	Loss: 0.384898
+2019-05-16 00:46:38,497 - INFO - Train Epoch: 50 [56320/60000 (93%)]	Loss: 0.391570
+2019-05-16 00:46:41,251 - INFO - Train Epoch: 50 took 0 days, 0 hours, 0 minutes, 46 seconds
+2019-05-16 00:46:53,599 - INFO - Train set: Average loss: 0.3845, Accuracy: 81.98%
+2019-05-16 00:46:55,666 - INFO - Test  set: Average loss: 0.4398, Accuracy: 79.13%
+2019-05-16 00:46:55,696 - INFO -  -- MNIST -- Finished, took 0 days, 1 hours, 0 minutes, 32 seconds
