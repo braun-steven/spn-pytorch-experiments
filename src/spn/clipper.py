@@ -47,7 +47,7 @@ class SumWeightClipper(object):
     Clip sum weights > 0.
     """
 
-    def __init__(self, device, lower_bound=1e-5):
+    def __init__(self, device, lower_bound=1e-40):
         """
         Args:
             device: Torch device.
