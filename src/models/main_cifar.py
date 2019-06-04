@@ -1,33 +1,35 @@
+import logging
 import os
 import sys
 import time
-import logging
-import torch
-from typing import Tuple
-import numpy as np
+import traceback
+from typing import List, Tuple
 
-from torch import nn, optim
+import numpy as np
+import torch
 from torch.utils.tensorboard import SummaryWriter
-from src.spn import distributions as spndist
+from torch import nn, optim
+from torch.nn import functional as F
+from torch import distributions as dist
+
+from src.spn.clipper import DistributionClipper, SumWeightNormalizer, SumWeightClipper
 
 from src.data.data import store_results
-from src.data.data_loader import load_multi_mnist
+from src.data.data_loader import get_cifar_loader
 from src.utils.utils import get_n_samples_from_loader
 from src.utils.utils import set_cuda_device
-from src.spn.clipper import DistributionClipper
-from src.spn.clipper import SumWeightNormalizer
-from src.spn.clipper import SumWeightClipper
+from src.models.models import get_model_by_tag
 from src.utils.args import init_argparser
 from src.utils.args import save_args
 from src.utils.utils import (
+    collect_tensorboard_info,
     count_params,
+    ensure_dir,
+    make_one_hot,
     set_seed,
     setup_logging,
     time_delta_now,
-    collect_tensorboard_info,
 )
-from src.models.models import *
-from src.models.models import get_model_by_tag
 
 os.environ["OMP_NUM_THREADS"] = "1"
 
@@ -43,32 +45,19 @@ def parse_args():
 
     # Specific arguments for this experiment
     parser.add_argument(
-        "--n-labels",
+        "--cifar",
         type=int,
-        default=2,
+        default=10,
         metavar="N",
-        help="Number of labels for artificial multilabel mnist task. Digits will be sample from [0, 1, ..., n_labels]",
+        help="Cifar dataset. Must be one of [10, 100]",
+        choices=[10, 100],
     )
-    parser.add_argument(
-        "--canvas-size", type=int, default=50, metavar="N", help="Canvas size."
-    )
-    parser.add_argument(
-        "--n-digits",
-        type=int,
-        default=5,
-        metavar="N",
-        help="Number of maximum digits per canvas.",
-    )
-    args = parser.parse_args()
 
-    if args.n_digits > args.n_labels:
-        raise Exception("Option --n-digits has to be <= --n-labels.")
+    args = parser.parse_args()
     return args
 
 
-def evaluate_model_multilabel(
-    model: nn.Module, device: str, loader, tag: str, n_labels: int
-) -> Tuple[float, float]:
+def evaluate(model: nn.Module, device: str, loader, tag: str) -> Tuple[float, float]:
     """
     Evaluate the model.
     
@@ -77,7 +66,6 @@ def evaluate_model_multilabel(
         device: Torch device to evaluate on.
         loader: Torch dataset loader.
         tag: Tag for logging (Train/Test).
-        n_labels: Number of labels.
 
     Returns:
         Tuple[float, float]: Tuple of (loss, accuracy).
@@ -86,10 +74,8 @@ def evaluate_model_multilabel(
 
     loss = 0.0
     correct = 0
+    loss_fn = nn.NLLLoss(reduction="sum")
 
-    loss_fn = nn.BCELoss(reduction="sum")
-
-    # Collect targets and outputs
     with torch.no_grad():
         for data, target in loader:
             # Send data and target to correct device
@@ -101,13 +87,12 @@ def evaluate_model_multilabel(
             # Comput loss
             loss += loss_fn(output, target)
 
-            pred = output > 0.5
+            _, pred = output.max(1)
             correct += pred.long().eq(target.long().view_as(pred)).sum().item()
 
-    n_samples = get_n_samples_from_loader(loader) * n_labels
+    n_samples = get_n_samples_from_loader(loader)
 
     loss /= n_samples
-
     accuracy = 100.0 * correct / n_samples
 
     logger.info(
@@ -118,7 +103,7 @@ def evaluate_model_multilabel(
     return (loss, accuracy)
 
 
-def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval=10):
+def train(model, device, train_loader, optimizer, epoch, log_interval=10):
     """
     Train the model for one epoch.
 
@@ -131,14 +116,12 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
     """
 
     model.train()
-
-    # Create clipper
     dist_clipper = DistributionClipper(device)
     sum_weight_normalizer = SumWeightNormalizer()
     sum_weight_clipper = SumWeightClipper(device)
 
     n_samples = get_n_samples_from_loader(train_loader)
-    loss_fn = nn.BCELoss()
+    loss_fn = nn.NLLLoss()
     t_start = time.time()
     for batch_idx, (data, target) in enumerate(train_loader):
         # Send data to correct device
@@ -149,8 +132,6 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
 
         # Inference
         output = model(data)
-
-        # Comput loss
         loss = loss_fn(output, target)
 
         # Backprop
@@ -172,39 +153,40 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
                     loss.item(),
                 )
             )
-        # if batch_idx % log_interval * 3 == 0:
-        #     logger.info("Samples:")
-        #     logger.info("Target: %s", target[0].cpu().numpy())
-        #     logger.info("Output: %s", output[0].detach().cpu().numpy())
-
     model.apply(sum_weight_normalizer)
     t_delta = time_delta_now(t_start)
     logger.info("Train Epoch: {} took {}".format(epoch, t_delta))
 
 
-def run_multilabel_mnist(args, base_dir):
+def run_cifar(args):
     """
-    Run the multilabel mnist experiment with the given arguments.
-    Args:
-        args: Command line args.
-        base_dir: Directory in which the experiment will be stored.
+    Run the experiment with a given percentage.
 
+    Args:
+        percentage (float): Percentage of training data available.
+        args: Command line args.
+
+    Returns:
+        Tuple[float, float, float, float]: Train acc, Test acc, Train loss, Test loss.
     """
+    use_cuda = args.cuda and torch.cuda.is_available()
     # Set seed globally
     set_seed(args.seed)
-    use_cuda = args.cuda and torch.cuda.is_available()
-    device = torch.device("cuda:{}".format(args.cuda_device_id) if use_cuda else "cpu")
+    torch.manual_seed(args.seed)
+    cuda_device = "cuda:{}".format(args.cuda_device_id[0])
+    device = torch.device(cuda_device if use_cuda else "cpu")
 
     logger.info("Main device: %s", device)
+    bs = args.batch_size
 
-    # Get the mnist loader
-    train_loader, test_loader = load_multi_mnist(
-        n_labels=args.n_labels, canvas_size=args.canvas_size, seed=args.seed, args=args
+    # Get the cifar loader
+    train_loader, test_loader = get_cifar_loader(
+        n_labels=args.cifar, use_cuda=use_cuda, args=args
     )
 
     # Retreive model
     model = get_model_by_tag(
-        args.net, device, args, args.canvas_size ** 2, args.n_labels
+        in_features=32 * 32, tag=args.net, device=device, args=args, n_labels=args.cifar
     )
 
     # Disable track_running_stats in batchnorm according to
@@ -222,7 +204,7 @@ def run_multilabel_mnist(args, base_dir):
     gamma = 0.5
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=gamma)
 
-    writer = SummaryWriter(log_dir=os.path.join(base_dir, "tb-log"))
+    writer = SummaryWriter(log_dir=os.path.join(ARGS.result_dir, ARGS.experiment_name))
 
     data = []
     # Run epochs
@@ -238,17 +220,11 @@ def run_multilabel_mnist(args, base_dir):
             scheduler.step()
 
         # Run train
-        train_multilabel(
-            model, device, train_loader, optimizer, epoch, args.log_interval
-        )
+        train(model, device, train_loader, optimizer, epoch, args.log_interval)
 
         # Evaluate model on train/test data
-        train_loss, train_acc = evaluate_model_multilabel(
-            model, device, train_loader, "Train", args.n_labels
-        )
-        test_loss, test_acc = evaluate_model_multilabel(
-            model, device, test_loader, "Test", args.n_labels
-        )
+        train_loss, train_acc = evaluate(model, device, train_loader, "Train")
+        test_loss, test_acc = evaluate(model, device, test_loader, "Test")
         data.append([epoch, train_acc, test_acc, train_loss, test_loss])
 
         # Collect data
@@ -258,8 +234,44 @@ def run_multilabel_mnist(args, base_dir):
 
     column_names = ["epoch", "train_acc", "test_acc", "train_loss", "test_loss"]
     store_results(
-        result_dir=base_dir, dataset_name="mnist", column_names=column_names, data=data
+        result_dir=os.path.join(args.result_dir, args.experiment_name),
+        dataset_name="cifar%s" % args.cifar,
+        column_names=column_names,
+        data=data,
     )
+
+
+def main():
+    """Run the Cifar experiment."""
+    set_cuda_device(ARGS.cuda_device_id)
+    float_formatter = lambda x: "%.3f" % x
+    np.set_printoptions(formatter={"float_kind": float_formatter})
+
+    # Setup logging in base_dir/log.txt
+    log_file = os.path.join(ARGS.result_dir, ARGS.experiment_name, "log.txt")
+    setup_logging(level=ARGS.log_level, filename=log_file)
+    logger.info(" -- Cifar -- Started ")
+    print("Result dir: ", ARGS.result_dir)
+    print("Log file: ", log_file)
+
+    # Save commandline arguments
+    save_args(ARGS)
+
+    tstart = time.time()
+    try:
+        if not ARGS.cuda:
+            # Set number of CPU threads
+            torch.set_num_threads(ARGS.njobs)
+
+        # Create and run experiment
+        run_cifar(ARGS)
+    except Exception as e:
+        logger.exception("Experiment crashed.")
+        logger.exception("Exception: %s", str(e))
+
+    # Measure time
+    tstr = time_delta_now(tstart)
+    logger.info(" -- CIFAR -- Finished, took %s", tstr)
 
 
 def plot_sample(x, y, y_pred, loss):
@@ -283,3 +295,8 @@ def plot_sample(x, y, y_pred, loss):
         )
     )
     plt.show()
+
+
+if __name__ == "__main__":
+    ARGS = parse_args()
+    main()

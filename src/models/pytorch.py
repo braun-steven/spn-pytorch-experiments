@@ -49,13 +49,17 @@ class SPNClipper(object):
         #     weights = module.weights.data
         #     weights.set_(torch.softmax(weights, 0))
 
-        if hasattr(module, "sum_weights"):
-            sum_weights = module.sum_weights.data
-            sum_weights.set_(torch.softmax(sum_weights, dim=0))
+        # if hasattr(module, "sum_weights"):
+        #     sum_weights = module.sum_weights.data
+        #     sum_weights.set_(torch.softmax(sum_weights, dim=0))
 
         if hasattr(module, "stds"):
             stds = module.stds.data
             stds.set_(torch.max(stds, self.min_std))
+
+        if hasattr(module, "sumweights"):
+            sumweights = module.sumweights.data
+            sumweights.clamp_(0)
 
 
 def children_to_torch(node: Node) -> List[nn.Module]:
@@ -421,34 +425,6 @@ class MultivariateGaussian(nn.Module):
 
     def __repr__(self):
         return str(self)
-
-
-class SPNLayer(nn.Module):
-    """
-    A PyTorch module that contains multiple SPNs with the same structure and treats them as single nodes in a layer.
-    """
-
-    def __init__(self, neuron: nn.Module, in_features: int, out_features: int):
-        """
-        Initialize the SPNLayer.
-
-        Args:
-            in_features (int): Number of input features for this layer.
-            out_features (int): Number of output features for this layer.
-        """
-        super(SPNLayer, self).__init__()
-
-        # Create out_features number of SPNNeurons
-        neurons = [neuron(in_features) for _ in range(out_features)]
-        self.spns = nn.ModuleList(neurons)
-        self.bn = nn.BatchNorm1d(out_features)
-
-    def forward(self, x):
-        # Feed forward each neuron and stack the results
-        spn_results = [spn(x) for spn in self.spns]
-        x = torch.stack(spn_results, dim=1)
-        x = self.bn(x)
-        return x
 
 
 def ll_loss(model: nn.Module, data) -> torch.Tensor:

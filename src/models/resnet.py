@@ -162,11 +162,13 @@ class ResNet(nn.Module):
         replace_stride_with_dilation=None,
         norm_layer=None,
         in_channels=3,
+        skip_last_linear=False,
     ):
         super(ResNet, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
+        self._skip_last_linear = skip_last_linear
 
         self.inplanes = 64
         self.dilation = 1
@@ -269,9 +271,11 @@ class ResNet(nn.Module):
         x = self.layer3(x)
         x = self.layer4(x)
 
-        x = self.avgpool(x)
-        x = x.reshape(x.size(0), -1)
-        x = self.fc(x)
+        # Skip linear leayer
+        if not self._skip_last_linear:
+            x = self.avgpool(x)
+            x = x.reshape(x.size(0), -1)
+            x = self.fc(x)
 
         return x
 

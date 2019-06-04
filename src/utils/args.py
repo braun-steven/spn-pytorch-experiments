@@ -10,6 +10,7 @@ def init_argparser():
     """
     # training settings
     parser = argparse.ArgumentParser(description="PyTorch MNIST Example")
+    parser.add_argument("--experiment", type=str, help="Choose the experiment.")
     parser.add_argument(
         "--batch-size",
         type=int,
@@ -149,23 +150,34 @@ def init_argparser():
     # return args
 
 
-def load_args(result_dir):
+def load_args(base_dir):
     """Load the commandline arguments.
 
     """
     parser = argparse.ArgumentParser()
     args = parser.parse_args(args=[])
-    with open(os.path.join(result_dir, "args.txt"), "r") as f:
+    with open(os.path.join(base_dir, "args.txt"), "r") as f:
         args.__dict__ = json.load(f)
     return args
 
 
-def save_args(args):
+def save_args(args, base_dir):
     """Save the commandline arguments.
 
     Args:
         args: Commandline arguments.
+        base_dir: Directory to store the arguments into.
 
     """
-    with open(os.path.join(args.result_dir, "args.txt"), "w") as f:
+    with open(os.path.join(base_dir, "args.txt"), "w") as f:
         json.dump(args.__dict__, f, indent=2)
+
+
+def clone_args(args):
+    parser = argparse.ArgumentParser()
+    tmp_args = parser.parse_args(args=[])
+    tmp_args.__dict__ = args.__dict__.copy()
+
+    # Create experiment dir
+    ensure_dir(tmp_args.experiment_name)
+    return tmp_args

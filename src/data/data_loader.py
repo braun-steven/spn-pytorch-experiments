@@ -305,13 +305,14 @@ def get_mnist_subset(train_bs, test_bs, use_cuda=False, p=100):
     return train_loader, test_loader
 
 
-def get_cifar100_loader(
-    use_cuda, args, train_sampler=None, test_sampler=None, size=(28, 28)
+def get_cifar_loader(
+    n_labels: int, use_cuda, args, train_sampler=None, test_sampler=None
 ):
     """
-    Get the CIFAR100 pytorch data loader.
+    Get the CIFAR10 pytorch data loader.
     
     Args:
+        n_labels: CIFAR version: either 10 or 100.
         use_cuda: Use cuda flag.
         args: Command line arguments.
         sampler: Dataset sampler.
@@ -320,9 +321,26 @@ def get_cifar100_loader(
 
     kwargs = {"num_workers": 1, "pin_memory": False} if use_cuda else {}
 
+    # Adjust for cifar 10 or 100
+    if n_labels == 10:
+        dataset = datasets.CIFAR10
+        normalizer = transforms.Normalize(
+            (0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)
+        )
+
+    elif n_labels == 100:
+        dataset = datasets.CIFAR100
+        normalizer = transforms.Normalize(
+            (0.50707516, 0.48654887, 0.44091784), (0.26733429, 0.25643846, 0.27615047)
+        )
+    else:
+        raise Exception(
+            "Invalid CIFAR dataset, must be either 10 or 100 but was %s" % n_labels
+        )
+
     if args.debug:
         train_sampler = torch.utils.data.SubsetRandomSampler(
-            indices=np.random.randint(0, 60000, (args.batch_size))
+            indices=np.random.randint(0, 50000, (args.batch_size))
         )
         test_sampler = torch.utils.data.SubsetRandomSampler(
             indices=np.random.randint(0, 10000, (args.batch_size))
@@ -330,14 +348,17 @@ def get_cifar100_loader(
 
     transformer = transforms.Compose(
         [
-            transforms.Resize(size),
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(45),
             transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,)),
+            normalizer,
         ]
     )
+
     # Train data loader
     train_loader = torch.utils.data.DataLoader(
-        datasets.CIFAR100("../data", train=True, download=True, transform=transformer),
+        dataset("../data", train=True, download=True, transform=transformer),
         batch_size=args.batch_size,
         shuffle=train_sampler is None,
         sampler=train_sampler,
@@ -350,7 +371,7 @@ def get_cifar100_loader(
 
     # Test data loader
     test_loader = torch.utils.data.DataLoader(
-        datasets.CIFAR100("../data", train=False, transform=transformer),
+        dataset("../data", train=False, transform=transformer),
         batch_size=args.test_batch_size,
         shuffle=test_sampler is None,
         sampler=test_sampler,
@@ -512,14 +533,14 @@ def _multi_mnist(path, max_digits=2, highest_digit=9, canvas_size=50, seed=42):
     `(x_train, y_train), (x_test, y_test)`. Each element in the y's is a
     np.ndarray of labels, one label for each digit in the image.
   """
-    from scipy.misc import imresize
+    from skimage.transform import resize
 
     def _sample_one(canvas_size, x_data, y_data):
         i = np.random.randint(x_data.shape[0])
         digit = x_data[i]
         label = y_data[i]
         scale = 0.1 * np.random.randn() + 1.3
-        resized = imresize(digit, 1.0 / scale)
+        resized = resize(digit, [np.floor(d / scale) for d in digit.shape])
         width = resized.shape[0]
         padding = canvas_size - width
         pad_l = np.random.randint(0, padding)
@@ -574,7 +595,7 @@ def _multi_mnist(path, max_digits=2, highest_digit=9, canvas_size=50, seed=42):
     )
     if os.path.exists(os.path.join(path, cache_filename)):
         logger.info("Loading cached Multi MNIST dataset: %s ...", cache_filename)
-        data = np.load(os.path.join(path, cache_filename))
+        data = np.load(os.path.join(path, cache_filename), allow_pickle=True)
         return (data["x_train"], data["y_train"]), (data["x_test"], data["y_test"])
     logger.info("Creating new Multi MNIST dataset ...")
     np.random.seed(seed)
@@ -583,7 +604,12 @@ def _multi_mnist(path, max_digits=2, highest_digit=9, canvas_size=50, seed=42):
     x_test, y_test = _build_dataset(x_test, y_test, max_digits, canvas_size)
     with open(os.path.join(path, cache_filename), "wb") as f:
         np.savez_compressed(
-            f, x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test
+            f,
+            x_train=x_train,
+            y_train=y_train,
+            x_test=x_test,
+            y_test=y_test,
+            allow_pickle=True,
         )
     return (x_train, y_train), (x_test, y_test)
 

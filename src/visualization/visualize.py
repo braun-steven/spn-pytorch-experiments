@@ -416,9 +416,10 @@ def plot_accs_mnist_multilabel():
 
     run_args = load_args(args.run)
     n_labels = run_args.n_labels
+    n_digits = run_args.n_digits
 
     # Titles
-    title = "MNIST Multilabel ($N_{labels}=%s$)" % n_labels
+    title = "MNIST Multilabel ($N_{labels}=%s,N_{digits}=%s$)" % (n_labels, n_digits)
     fig.suptitle(title)
     # Shrink current axis's height by 10% on the bottom
     fontP = FontProperties()
