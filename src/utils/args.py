@@ -37,6 +37,11 @@ def init_argparser():
         metavar="DIR",
     )
     parser.add_argument(
+        "--reuse-base-dir",
+        help="path to the an already existing base directory (e.g. to continue certain experiments)",
+        metavar="DIR",
+    )
+    parser.add_argument(
         "--epochs",
         type=int,
         default=10,
@@ -135,6 +140,12 @@ def init_argparser():
         action="store_true",
         default=False,
         help="For Saving the current Model",
+    )
+    parser.add_argument(
+        "--l2",
+        type=float,
+        default=0.0,
+        help="L2 weight decay parameter. (default: 0.0)",
     )
     return parser
 

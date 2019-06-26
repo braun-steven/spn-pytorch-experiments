@@ -9,8 +9,12 @@ logger = logging.getLogger(__name__)
 
 
 class Sum(nn.Module):
-    def __init__(self, in_channels, in_features, out_channels):
+    def __init__(self, in_channels, in_features, out_channels, dropout=0.0):
         super(Sum, self).__init__()
+        self.in_channels = in_channels
+        self.in_features = in_features
+        self.out_channels = out_channels
+        self.dropout = dropout
         assert out_channels > 0, (
             "Number of output channels must be at least 1, but was %s." % out_channels
         )
@@ -20,25 +24,39 @@ class Sum(nn.Module):
         # Normalize over in_channel xis
         F.normalize(ws, p=1, dim=2, out=ws)
         self.sum_weights = nn.Parameter(ws)
+        self._bernoulli_dist = torch.distributions.Bernoulli(probs=dropout)
 
     def forward(self, x):
         """
         Sum layer foward pass.
 
         Args:
-            x: Input of shape [batch, channel, in_features].
+            x: Input of shape [batch, in_features, in_channels].
 
         Returns:
-            torch.Tensor: Output of shape [batch, out_channels, in_features]
+            torch.Tensor: Output of shape [batch, in_features, out_channels]
         """
+        # assert x.dim() == 3
+
+        # Apply dropout: Set random sum node children to 0 (-inf in log domain)
+        if self.dropout > 0.0:
+            r = self._bernoulli_dist.sample(x.shape).type(torch.bool)
+            x[r] = np.NINF
+
         # Multiply x with weights in logspace
-        # Resuts in shape: [b, d, ic, oc]
-        x = x.unsqueeze(3) + torch.log(self.sum_weights)
+        # Resuts in shape: [n, d, ic, oc]
+        x = x.unsqueeze(3) + torch.log(torch.softmax(self.sum_weights, dim=2))
 
         # Compute sum via logsumexp along dimension "ic" (in_channels)
-        # Resuts in shape: [b, d, oc]
+        # Resuts in shape: [n, d, oc]
         x = torch.logsumexp(x, dim=2)
+
         return x
+
+    def __repr__(self):
+        return "Sum(in_channels={}, in_features={}, out_channels={})".format(
+            self.in_channels, self.in_features, self.out_channels
+        )
 
 
 class Product(nn.Module):
@@ -58,6 +76,8 @@ class Product(nn.Module):
         """
 
         super(Product, self).__init__()
+        self.in_features = in_features
+        self.cardinality = cardinality
 
         in_features = int(in_features)
         self._cardinality = cardinality
@@ -80,7 +100,7 @@ class Product(nn.Module):
                     self._scopes[j].append(scopes[i + j])
                 else:
                     # Case: d mod cardinality != 0 => Create marginalized nodes with prob 1.0
-                    # Pad x in forward pass on the right: [b, d, c] -> [b, d+1, c] where index
+                    # Pad x in forward pass on the right: [n, d, c] -> [n, d+1, c] where index
                     # d+1 is the marginalized node (index "in_features")
                     self._scopes[j].append(in_features)
 
@@ -97,10 +117,7 @@ class Product(nn.Module):
         Returns:
             torch.Tensor: Output of shape [batch, ceil(in_features/cardinality), channel].
         """
-
-        # Only one product node
-        if self._cardinality == x.shape[1]:
-            return x.sum(1)
+        # assert x.dim() == 3
 
         if self._pad:
             # Pad marginalized node
@@ -115,6 +132,11 @@ class Product(nn.Module):
         for j in range(self._cardinality):
             result += x[:, self._scopes[j, :], :]
         return result
+
+    def __repr__(self):
+        return "Product(in_features={}, cardinality={})".format(
+            self.in_features, self.cardinality
+        )
 
 
 if __name__ == "__main__":

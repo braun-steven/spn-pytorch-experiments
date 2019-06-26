@@ -681,7 +681,7 @@ def load_multi_mnist(n_labels, canvas_size=64, seed=0, args=None):
 
 if __name__ == "__main__":
     (x_train, y_train), (x_test, y_test) = _multi_mnist(
-        "./data/multi-mnist", max_digits=5, highest_digit=10, canvas_size=50, seed=1
+        "./data/multi-mnist", max_digits=3, highest_digit=3, canvas_size=64, seed=1
     )
     import matplotlib.pyplot as plt
     import os

@@ -117,8 +117,6 @@ def train(model, device, train_loader, optimizer, epoch, log_interval=10):
 
     model.train()
     dist_clipper = DistributionClipper(device)
-    sum_weight_normalizer = SumWeightNormalizer()
-    sum_weight_clipper = SumWeightClipper(device)
 
     n_samples = get_n_samples_from_loader(train_loader)
     loss_fn = nn.NLLLoss()
@@ -140,7 +138,6 @@ def train(model, device, train_loader, optimizer, epoch, log_interval=10):
 
         # Clip distribution values and weights
         model.apply(dist_clipper)
-        model.apply(sum_weight_clipper)
 
         # Log stuff
         if batch_idx % log_interval == 0:
@@ -153,7 +150,6 @@ def train(model, device, train_loader, optimizer, epoch, log_interval=10):
                     loss.item(),
                 )
             )
-    model.apply(sum_weight_normalizer)
     t_delta = time_delta_now(t_start)
     logger.info("Train Epoch: {} took {}".format(epoch, t_delta))
 

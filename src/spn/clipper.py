@@ -41,6 +41,13 @@ class DistributionClipper(object):
             param = module.df.data
             param.clamp_(self.lower_bound)
 
+        if hasattr(module, "triangular"):
+            param = module.triangular.data
+            # Only clamp diagonal values for each
+            mult_times_ndist = param.shape[0]
+            for m in range(mult_times_ndist):
+                param[m, :, :].diagonal().clamp_(self.lower_bound)
+
 
 class SumWeightClipper(object):
     """

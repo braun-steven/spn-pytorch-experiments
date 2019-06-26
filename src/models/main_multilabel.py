@@ -14,6 +14,8 @@ from src.data.data import store_results
 from src.data.data_loader import load_multi_mnist
 from src.utils.utils import get_n_samples_from_loader
 from src.utils.utils import set_cuda_device
+from src.utils.utils import generate_experiment_dir
+from src.utils.utils import generate_run_base_dir
 from src.spn.clipper import DistributionClipper
 from src.spn.clipper import SumWeightNormalizer
 from src.spn.clipper import SumWeightClipper
@@ -134,8 +136,6 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
 
     # Create clipper
     dist_clipper = DistributionClipper(device)
-    sum_weight_normalizer = SumWeightNormalizer()
-    sum_weight_clipper = SumWeightClipper(device)
 
     n_samples = get_n_samples_from_loader(train_loader)
     loss_fn = nn.BCELoss()
@@ -159,7 +159,6 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
 
         # Clip distribution values and weights
         model.apply(dist_clipper)
-        model.apply(sum_weight_clipper)
 
         # Log stuff
         if batch_idx % log_interval == 0:
@@ -177,17 +176,16 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
         #     logger.info("Target: %s", target[0].cpu().numpy())
         #     logger.info("Output: %s", output[0].detach().cpu().numpy())
 
-    model.apply(sum_weight_normalizer)
     t_delta = time_delta_now(t_start)
     logger.info("Train Epoch: {} took {}".format(epoch, t_delta))
 
 
-def run_multilabel_mnist(args, base_dir):
+def run_multilabel_mnist(args, exp_dir):
     """
     Run the multilabel mnist experiment with the given arguments.
     Args:
         args: Command line args.
-        base_dir: Directory in which the experiment will be stored.
+        exp_dir: Directory in which the experiment will be stored.
 
     """
     # Set seed globally
@@ -216,25 +214,18 @@ def run_multilabel_mnist(args, base_dir):
     logger.info("Number of paramters: %s", count_params(model))
 
     # Define optimizer
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.l2)
 
     # Scheduler for learning rate
-    gamma = 0.5
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=gamma)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
 
-    writer = SummaryWriter(log_dir=os.path.join(base_dir, "tb-log"))
+    writer = SummaryWriter(log_dir=os.path.join(exp_dir, "tb-log"))
 
     data = []
     # Run epochs
     for epoch in range(1, args.epochs + 1):
-        # Start counting after 10 epochs, that is, first lr reduction is at epoch 20
-        if epoch > 10:
-            logger.info(
-                "Epoch %s: Reducing learning rate by %s to %s",
-                epoch,
-                gamma,
-                optimizer.param_groups[0]["lr"],
-            )
+        # Start counting after 20 epochs, that is, first lr reduction is at epoch 30
+        if epoch > 20:
             scheduler.step()
 
         # Run train
@@ -258,7 +249,7 @@ def run_multilabel_mnist(args, base_dir):
 
     column_names = ["epoch", "train_acc", "test_acc", "train_loss", "test_loss"]
     store_results(
-        result_dir=base_dir, dataset_name="mnist", column_names=column_names, data=data
+        result_dir=exp_dir, dataset_name="mnist", column_names=column_names, data=data
     )
 
 
@@ -283,3 +274,53 @@ def plot_sample(x, y, y_pred, loss):
         )
     )
     plt.show()
+
+
+def main():
+    """Run the MNIST experiment."""
+    os.environ["CUDA_VISIBLE_DEVICES"] = ",".join([str(x) for x in ARGS.cuda_device_id])
+    float_formatter = lambda x: "%.3f" % x
+    np.set_printoptions(formatter={"float_kind": float_formatter})
+
+    # Setup logging in base_dir/log.txt
+    log_file = os.path.join(ARGS.result_dir, ARGS.experiment_name, "log.txt")
+    setup_logging(level=ARGS.log_level, filename=log_file)
+    logger.info(" -- MNIST Multilabel -- Started ")
+    print("Result dir: ", ARGS.result_dir)
+    print("Log file: ", log_file)
+
+    # Save commandline arguments
+
+    tstart = time.time()
+    try:
+        if not ARGS.cuda:
+            # Set number of CPU threads
+            torch.set_num_threads(ARGS.njobs)
+        else:
+            ARGS.cuda_device_id = ARGS.cuda_device_id[0]
+
+        if ARGS.reuse_base_dir is not None:
+            base_dir = ARGS.reuse_base_dir
+        else:
+            base_dir = generate_run_base_dir(
+                suffix="debug",
+                experiment="multilabel-mnist",
+                result_dir=ARGS.result_dir,
+                timestamp=tstart,
+            )
+        exp_dir = generate_experiment_dir(base_dir, ARGS.net, "test")
+        save_args(ARGS, exp_dir)
+        # Create and run experiment
+        run_multilabel_mnist(ARGS, exp_dir)
+    except Exception as e:
+        logger.exception("Experiment crashed.")
+        logger.exception("Exception: %s", str(e))
+
+    # Measure time
+    tstr = time_delta_now(tstart)
+    logger.info(" -- MNIST -- Finished, took %s", tstr)
+
+
+if __name__ == "__main__":
+    ARGS = parse_args()
+    main()

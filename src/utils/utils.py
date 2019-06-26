@@ -27,7 +27,8 @@ def time_delta_now(ts: float) -> str:
     hours = round(c // 3600 % 24)
     minutes = round(c // 60 % 60)
     seconds = round(c % 60)
-    return f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds"
+    millisecs = round(c % 1 * 1000)
+    return f"{days} days, {hours} hours, {minutes} minutes, {seconds} seconds, {millisecs} milliseconds"
 
 
 def ensure_dir(d):
@@ -51,21 +52,33 @@ def count_params(model) -> int:
 
 
 def generate_run_base_dir(
-    experiment: str, arch: str, suffix: str, tag: str, result_dir: str
+    experiment: str, suffix: str, result_dir: str, timestamp
 ) -> str:
     """
     Generate a base directory for each experiment run.
+    Looks like this: {result_dir}/{experiment}/{date}_{suffix}/{tag}/{arch}
     Args:
-        tag (str): Experiment tag.
         result_dir (str): Experiment output directory.
 
     Returns:
         str: Directory name.
     """
-    date_str = time.strftime("%y%m%d_%H%M")
-    base_dir = os.path.join(result_dir, experiment, f"{date_str}_{suffix}", tag, arch)
-    os.makedirs(base_dir)
+    date_str = datetime.datetime.fromtimestamp(timestamp).strftime("%y%m%d_%H%M")
+    base_dir = os.path.join(result_dir, experiment, f"{date_str}_{suffix}")
+    ensure_dir(base_dir)
     return base_dir
+
+
+def generate_experiment_dir(base_dir: str, arch: str, tag: str) -> str:
+    """
+    Generate a base directory for each experiment run.
+
+    Returns:
+        str: Directory name.
+    """
+    exp_dir = os.path.join(base_dir, tag, arch)
+    ensure_dir(exp_dir)
+    return exp_dir
 
 
 def setup_logging(filename: str = "log.txt", level: str = "INFO"):
