@@ -151,7 +151,7 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
         output = model(data)
 
         # Comput loss
-        loss = loss_fn(output, target)
+        loss = loss_fn(output.sigmoid(), target)
 
         # Backprop
         loss.backward()
@@ -171,10 +171,6 @@ def train_multilabel(model, device, train_loader, optimizer, epoch, log_interval
                     loss.item(),
                 )
             )
-        # if batch_idx % log_interval * 3 == 0:
-        #     logger.info("Samples:")
-        #     logger.info("Target: %s", target[0].cpu().numpy())
-        #     logger.info("Output: %s", output[0].detach().cpu().numpy())
 
     t_delta = time_delta_now(t_start)
     logger.info("Train Epoch: {} took {}".format(epoch, t_delta))
@@ -251,29 +247,6 @@ def run_multilabel_mnist(args, exp_dir):
     store_results(
         result_dir=exp_dir, dataset_name="mnist", column_names=column_names, data=data
     )
-
-
-def plot_sample(x, y, y_pred, loss):
-    """
-    Plot a single sample witht the target and prediction in the title.
-
-    Args:
-        x: Image.
-        y: Target.
-        y_pred: Target prediction.
-        loss: Loss value.
-    """
-    import matplotlib.pyplot as plt
-
-    plt.imshow(x.squeeze().numpy())
-    plt.title(
-        "y={}\ny_pred={}\nloss={}".format(
-            y.squeeze().numpy(),
-            y_pred.squeeze().detach().numpy(),
-            loss.detach().numpy(),
-        )
-    )
-    plt.show()
 
 
 def main():

@@ -20,11 +20,11 @@ logger = logging.getLogger(__name__)
 
 mains = {
     "multilabel-mnist": main_multilabel.run_multilabel_mnist,
-    "cifar": main_cifar.run_cifar,
+    "cifar10": main_cifar.run_cifar,
 }
 get_args = {
     "multilabel-mnist": main_multilabel.parse_args,
-    "cifar": main_cifar.parse_args,
+    "cifar10": main_cifar.parse_args,
 }
 
 
@@ -83,8 +83,7 @@ def main(exp):
     args_method = get_args[exp]
     args = args_method()
 
-    # Now arguments can be modified and the experiment can be started with multiple different
-    # arguments
+    # Now arguments can be modified and the experiment can be started with multiple different arguments
 
     # Create a queue for all available cuda devices
     set_cuda_device(args.cuda_device_id)
@@ -96,7 +95,7 @@ def main(exp):
 
     suffix = "gridsearch"
     timestamp = time.time()
-    for net in ["resnet+spn"]:
+    for net in ["resnet+spn", "resnet"]:
         for batch_size in [64, 128, 256]:
             for lr in [0.001, 0.0001]:
                 for l2 in [0, 0.1, 0.01, 0.001, 0.0001]:

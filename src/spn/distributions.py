@@ -59,14 +59,21 @@ class Leaf(nn.Module, ABC):
         assert multiplicity > 0, "Multiplicity must be > 0 but was %s." % multiplicity
         self.multiplicity = multiplicity
         self.in_features = in_features
-        self.dropout = dropout
-        # self._bernoulli_dist = dist.Bernoulli(probs=dropout)
+        self.dropout = nn.Parameter(torch.tensor(dropout), requires_grad=False)
+
+        self.out_shape = (-1, in_features, multiplicity)
+        self.out_shape = f"(N, {in_features}, {multiplicity})"
 
     def forward(self, x):
         # Apply dropout sampled from a bernoulli
         if self.dropout > 0.0:
-            x = x * self._bernoulli_dist.sample(x.shape)
+            __import__("ipdb").set_trace(context=13)
+            bernoulli_dist = dist.Bernoulli(probs=self.dropout)
+            x = x * bernoulli_dist.sample(x.shape)
         return x
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(in_features={self.in_features}, multiplicity={self.multiplicity}, dropout={self.dropout}, out_shape={self.out_shape})"
 
 
 class Normal(Leaf):
@@ -127,6 +134,8 @@ class MultivariateNormal(Leaf):
         self.triangular = nn.Parameter(rand)
         self._mv = dist.MultivariateNormal(loc=self.means, scale_tril=self.triangular)
 
+        self.out_shape = f"(N, {self._out_features}, {self.multiplicity})"
+
     def forward(self, x):
         # Pad dummy variable via reflection
         if self._pad_value != 0:
@@ -140,7 +149,6 @@ class MultivariateNormal(Leaf):
 
         # Compute multivariate gaussians
         # Output shape: [n, multiplicity, d / cardinality]
-        __import__("ipdb").set_trace(context=13)
         x = self._mv.log_prob(x)
 
         # Output shape: [n, d / cardinality, multiplicity]
@@ -334,7 +342,97 @@ class IsotropicMultivariateNormal(Leaf):
         return x
 
 
+class Gamma(Leaf):
+    """Gamma distribution layer."""
+
+    def __init__(self, multiplicity, in_features, dropout=0.0):
+        """Creat a gamma layer.
+
+        Args:
+            multiplicity: Number of parallel representations for each input feature.
+            in_features: Number of input features.
+
+        """
+        super().__init__(multiplicity, in_features, dropout)
+        self.concentration = nn.Parameter(torch.rand(1, in_features, multiplicity))
+        self.rate = nn.Parameter(torch.rand(1, in_features, multiplicity))
+        self.gamma = dist.Gamma(concentration=self.concentration, rate=self.rate)
+
+    def forward(self, x):
+        x = dist_forward(self.gamma, x)
+        x = super().forward(x)
+        return x
+
+
+class Poisson(Leaf):
+    """Poisson distribution layer."""
+
+    def __init__(self, multiplicity, in_features, dropout=0.0):
+        """Creat a poisson layer.
+
+        Args:
+            multiplicity: Number of parallel representations for each input feature.
+            in_features: Number of input features.
+
+        """
+        super().__init__(multiplicity, in_features, dropout)
+        self.rate = nn.Parameter(torch.rand(1, in_features, multiplicity))
+        self.poisson = dist.Poisson(rate=self.rate)
+
+    def forward(self, x):
+        x = dist_forward(self.poisson, x)
+        x = super().forward(x)
+        return x
+
+
 if __name__ == "__main__":
+
+    rate = 100
+    poisson = torch.distributions.Poisson(rate)
+
+    model = Poisson(1, in_features=1)
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+
+    for epoch in range(100):
+
+        model.train()
+
+        loss_fn = nn.NLLLoss()
+        for batch_idx in range(1000):
+            # Send data to correct device
+            data = poisson.sample([10]).view(-1, 1)
+
+            # Reset gradients
+            optimizer.zero_grad()
+
+            # Inference
+            output = model(data)
+
+            # Comput loss
+            loss = -1 * output.mean()
+
+            # Backprop
+            loss.backward()
+            optimizer.step()
+
+            # Log stuff
+            if batch_idx % 100 == 0:
+                print(
+                    "Train Epoch: {} [{: >5}/{: <5} ({:.0f}%)]\tLoss: {:.6f}".format(
+                        epoch,
+                        batch_idx * len(data),
+                        100 * 1000,
+                        100.0 * batch_idx / 1000,
+                        loss.item() / 100,
+                    )
+                )
+                print(model.rate)
+                # print(model.triangular.permute(0, 2, 1).matmul(model.triangular))
+
+        print(model.rate)
+
+    exit()
     bs = 10
     n_features = 6
     cardinality = 2

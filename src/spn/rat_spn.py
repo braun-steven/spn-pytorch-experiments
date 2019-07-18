@@ -1,7 +1,6 @@
 import logging
 
 import numpy as np
-import spn.experiments.RandomSPNs.RAT_SPN as RAT_SPN
 import spn.experiments.RandomSPNs.region_graph as region_graph
 import tensorflow as tf
 from spn.io.Graphics import plot_spn
@@ -10,13 +9,111 @@ from torch import nn
 from torch.nn import functional as F
 import time
 
-from src.spn.distributions import Normal
+from torch import distributions as dist
+from src.spn.distributions import Normal, dist_forward
 from src.spn.distributions import IsotropicMultivariateNormal
 from src.spn.distributions import MultivariateNormal
+from src.spn.distributions import Leaf
 from src.spn.layers import Product, Sum
 from src.utils.utils import time_delta_now
 
 logger = logging.getLogger(__name__)
+
+
+class RegionSpn(nn.Module):
+    """Defines a single SPN that is create via RatSpnConstructor.random_split(...)."""
+
+    def __init__(self, S, I, dropout, num_parts, num_recursions, in_features):
+        """
+        Init a Region SPN split.
+
+        Args:
+            S (int): Number of sum nodes.
+            I (int): Number of distributions for each leaf node.
+            dropout (float): Dropout probability.
+            num_parts (int): Number of partitions.
+            num_recursions (int): Number of split repetitions.
+
+        """
+        super().__init__()
+
+        self.S = S
+        self.I = I
+        self.dropout = dropout
+        self.num_parts = num_parts
+        self.num_recursions = num_recursions
+        self.in_features = in_features
+        self._leaf_output_features = num_parts ** num_recursions
+
+        # Build RegionSpn
+        self._build()
+
+        # Randomize features
+        self.rand_idxs = torch.tensor(np.random.permutation(in_features))
+
+    def _build(self):
+        # Build the SPN bottom up:
+
+        # Definition from RAT Paper
+        # Leaf Region:      Create I leaf nodes
+        # Root Region:      Create C sum nodes
+        # Internal Region:  Create S sum nodes
+        # Partition:        Cross products of all child-regions
+
+        ### LEAF ###
+        # Cardinality is the size of the region in the last partitions
+        cardinality = np.ceil(
+            self.in_features / (self.num_parts ** self.num_recursions)
+        ).astype(int)
+        self._leaf = IndependentNormal(
+            multiplicity=self.I,
+            in_features=self.in_features,
+            cardinality=cardinality,
+            dropout=self.dropout,
+        )
+        self._inner_layers = nn.Sequential()
+
+        count = 0
+        prod = RatProduct(in_features=self.num_parts ** self.num_recursions)
+        self._inner_layers.add_module(f"Product-{count}", prod)
+        count += 1
+
+        for i in np.arange(start=self.num_recursions - 1, stop=0, step=-1):
+            is_lowest_sum_layer = i == self.num_recursions - 1
+            if is_lowest_sum_layer:
+                # Output channels channels of product layer after leafs
+                sum_in_channels = self.I ** 2
+            else:
+                # Output channels of product layer after sums
+                sum_in_channels = self.S ** 2
+
+            in_features = self.num_parts ** i
+
+            # Sum layer
+            sumlayer = Sum(
+                in_features=in_features,
+                in_channels=sum_in_channels,
+                out_channels=self.S,
+            )
+
+            # Product layer
+            prod = RatProduct(in_features=in_features)
+
+            # Collect
+            self._inner_layers.add_module(f"Sum-{count}", sumlayer)
+            self._inner_layers.add_module(f"Product-{count}", prod)
+            count += 1
+
+    def forward(self, x):
+        # Random permutation
+        x = x[:, self.rand_idxs]
+
+        # Apply leaf distributions
+        x = self._leaf(x)
+
+        # Forward to inner product and sum layers
+        x = self._inner_layers(x)
+        return x
 
 
 class RatSpnConstructor:
@@ -40,7 +137,7 @@ class RatSpnConstructor:
         self.dropout = dropout
 
         # Collect SPNs. Each random_split(...) call adds one SPN
-        self._spns = []
+        self._region_spns = []
 
     def _create_spn(self, num_parts, num_recursions=1):
         """Create an SPN from the given RAT parameters.
@@ -49,64 +146,64 @@ class RatSpnConstructor:
             num_parts (int): Number of partitions.
             num_recursions (int, optional): Number of split repetitions. Defaults to 1.
         """
-        # Build the SPN top down:
-        layers = []
 
-        for i in range(1, num_recursions + 1):
-            prodlayer = RatProduct(in_features=num_parts ** i)
-            is_last_layer = i == num_recursions
-            if is_last_layer:
-                # Output channels of distribution layer
-                sum_in_channels = self.I
-            else:
-                # Output channels of product layer
-                sum_in_channels = self.S ** 2
-
-            sumlayer = Sum(
-                in_channels=sum_in_channels,
-                in_features=num_parts ** i,
-                out_channels=self.S,
-                dropout=self.dropout,
-            )
-            layers.append(prodlayer)
-            layers.append(sumlayer)
-
-        # Cardinality is the size of the region in the last partitions
-        cardinality = np.ceil(self.in_features / (num_parts ** num_recursions)).astype(
-            int
+        spn = RegionSpn(
+            self.S, self.I, self.dropout, num_parts, num_recursions, self.in_features
         )
 
-        # prod = Product(
-        #     in_features=self.in_features, cardinality=cardinality, randomize=True
-        # )
-        # gauss = Normal(
-        #     multiplicity=self.I, in_features=self.in_features, dropout=self.dropout
-        # )
-        # layers.append(prod)
-        # layers.append(gauss)
+        self._region_spns.append(spn)
+        # # Build the SPN top down:
+        # layers = []
 
-        # multivariate_gauss = MultivariateNormal(
+        # # Definition from RAT Paper
+        # # Leaf Region:      Create I leaf nodes
+        # # Root Region:      Create C sum nodes
+        # # Internal Region:  Create S sum nodes
+        # # Partition:        Cross products of all child-regions
+
+        # ### LEAF ###
+        # # Cardinality is the size of the region in the last partitions
+        # cardinality = np.ceil(self.in_features / (num_parts ** num_recursions)).astype(
+        #     int
+        # )
+        # leaf = IndependentNormal(
         #     multiplicity=self.I,
-        #     cardinality=cardinality,
         #     in_features=self.in_features,
+        #     cardinality=cardinality,
         #     dropout=self.dropout,
+        #     pad=num_parts ** num_recursions,
         # )
-        multivariate_gauss = IsotropicMultivariateNormal(
-            multiplicity=self.I,
-            cardinality=cardinality,
-            in_features=self.in_features,
-            dropout=self.dropout,
-        )
-        layers.append(multivariate_gauss)
+        # layers.append(leaf)
 
-        # Reverse layers, since they have to be defined bottom up
-        layers = reversed(layers)
+        # prodlayer = RatProduct(in_features=num_parts ** num_recursions)
+        # layers.append(prodlayer)
 
-        # Define SPN by stacking the layers
-        spn = nn.Sequential(*layers)
-        print("Added spn:\n")
-        print(spn)
-        self._spns.append(spn)
+        # for i in np.arange(start=num_recursions - 1, stop=0, step=-1):
+        #     is_lowest_sum_layer = i == num_recursions - 1
+        #     if is_lowest_sum_layer:
+        #         # Output channels channels of product layer after leafs
+        #         sum_in_channels = self.I ** 2
+        #     else:
+        #         # Output channels of product layer after sums
+        #         sum_in_channels = self.S ** 2
+
+        #     in_features = num_parts ** i
+
+        #     ## SUM layer
+        #     sumlayer = Sum(
+        #         in_features=in_features,
+        #         in_channels=sum_in_channels,
+        #         out_channels=self.S,
+        #     )
+        #     layers.append(sumlayer)
+
+        #     prodlayer = RatProduct(in_features=in_features)
+        #     layers.append(prodlayer)
+
+        # # Define SPN by stacking the layers
+        # spn = nn.Sequential(*layers)
+        # spn.D = num_recursions
+        # self._spns.append(spn)
 
     def random_split(self, num_parts, num_recursions=1):
         """Randomly split the region graph.
@@ -124,11 +221,99 @@ class RatSpnConstructor:
 
     def build(self):
         """Build the RatSpn object from the defined region graph"""
-        if len(self._spns) == 0:
+        if len(self._region_spns) == 0:
             raise Exception(
                 "No random split has been added. Call random_split(...) at least once before building the RatSpn."
             )
-        return RatSpn(spns=self._spns, C=self.C, S=self.S)
+        return RatSpn(region_spns=self._region_spns, C=self.C, S=self.S, I=self.I)
+
+
+class RatNormal(Leaf):
+    """ Implementation as in RAT-SPN
+
+    Gaussian layer. Maps each input feature to its gaussian log likelihood."""
+
+    def __init__(
+        self,
+        multiplicity,
+        in_features,
+        dropout=0.0,
+        min_sigma=0.1,
+        max_sigma=1.0,
+        min_mean=None,
+        max_mean=None,
+    ):
+        """Creat a gaussian layer.
+
+        Args:
+            multiplicity: Number of parallel representations for each input feature.
+            in_features: Number of input features.
+
+        """
+        super().__init__(multiplicity, in_features, dropout)
+
+        # Create gaussian means and stds
+        self.means = nn.Parameter(torch.randn(1, in_features, multiplicity))
+        self.stds = nn.Parameter(torch.rand(1, in_features, multiplicity))
+
+        self.min_sigma = min_sigma
+        self.max_sigma = max_sigma
+        self.min_mean = min_mean
+        self.max_mean = max_mean
+
+    def forward(self, x):
+        if self.min_sigma < self.max_sigma:
+            sigma_ratio = torch.sigmoid(self.stds)
+            sigma = self.min_sigma + (self.max_sigma - self.min_sigma) * sigma_ratio
+        else:
+            sigma = 1.0
+
+        means = self.means
+        if self.max_mean:
+            assert self.min_mean is not None
+            mean_range = self.max_mean - self.min_mean
+            means = torch.sigmoid(self.means) * mean_range + self.min_mean
+
+        gauss = dist.Normal(means, torch.sqrt(sigma))
+        x = dist_forward(gauss, x)
+        x = super().forward(x)
+        return x
+
+
+class IndependentNormal(Leaf):
+    def __init__(self, multiplicity, in_features, cardinality, dropout=0.0):
+        """
+        Create multivariate normal that only has non zero values in the covariance matrix on the diagonal.
+
+        Args:
+            multiplicity: Number of parallel representations for each input feature.
+            cardinality: Number of variables per gauss.
+            in_features: Number of input features.
+            droptout: Dropout probabilities.
+        """
+        super(IndependentNormal, self).__init__(multiplicity, in_features, dropout)
+        self.gauss = RatNormal(
+            multiplicity=multiplicity, in_features=in_features, dropout=dropout
+        )
+        self.prod = Product(in_features=in_features, cardinality=cardinality)
+
+        self.cardinality = cardinality
+        self.out_shape = f"(N, {self.prod._out_features}, {multiplicity})"
+
+        # Init weights
+        self._init_weights()
+
+    def _init_weights(self):
+        """Iniialize Normal weights with a truncated distribution."""
+        truncated_normal_(self.gauss.stds)
+
+    def forward(self, x):
+        x = self.gauss(x)
+        x = self.prod(x)
+        return x
+
+    def __repr__(self):
+        return f"IndependentNormal(in_features={self.in_features}, multiplicity={self.multiplicity}, dropout={self.dropout}, cardinality={self.cardinality}, out_shape={self.out_shape})"
 
 
 class RatProduct(nn.Module):
@@ -143,7 +328,7 @@ class RatProduct(nn.Module):
     TODO: Generalize to k regions.
     """
 
-    def __init__(self, in_features, randomize=True):
+    def __init__(self, in_features):
         """
         Create a rat product node layer.
 
@@ -167,10 +352,7 @@ class RatProduct(nn.Module):
         # Collect scopes for each product child
         self._scopes = [[] for _ in range(cardinality)]
         # Create random sequence of scopes
-        if randomize:
-            scopes = np.random.permutation(in_features)
-        else:
-            scopes = range(in_features)
+        scopes = np.random.permutation(in_features)
 
         # For two consecutive (random) scopes
         for i in range(0, in_features, cardinality):
@@ -185,6 +367,8 @@ class RatProduct(nn.Module):
 
         # Transform into numpy array for easier indexing
         self._scopes = np.array(self._scopes)
+
+        self.out_shape = f"(N, {self._out_features}, C_in^2)"
 
     def forward(self, x):
         """
@@ -221,8 +405,8 @@ class RatProduct(nn.Module):
         return result
 
     def __repr__(self):
-        return "RatProduct(in_features={}, cardinality={})".format(
-            self.in_features, self.cardinality
+        return "RatProduct(in_features={}, out_shape={})".format(
+            self.in_features, self.out_shape
         )
 
 
@@ -234,71 +418,80 @@ class RatSpn(nn.Module):
     https://arxiv.org/abs/1806.01910
     """
 
-    def __init__(self, spns, C, S):
+    def __init__(self, region_spns, C, S, I):
         """
         Initialize the RAT SPN  PyTorch module.
 
         Args:
-            spns: Internal SPNs which correspond to random region splits.
+            region_spns: Internal SPNs which correspond to random region splits.
             C: Number of classes.
             S: Number of sum nodes at each sum layer.
+            I: Number of leaf nodes for each leaf region.
         """
         super().__init__()
         self.C = C
-        self._priors = np.log(1 / self.C)
-        self.spns = nn.ModuleList(spns)
-        self._root = Sum(in_channels=len(spns) * S ** 2, in_features=1, out_channels=C)
+        self._priors = nn.Parameter(
+            torch.log(torch.tensor(1 / self.C)), requires_grad=False
+        )
+        self.region_spns = nn.ModuleList(region_spns)
+
+        # Root
+        in_channels = 0
+        for spn in region_spns:
+            if spn.num_recursions > 1:
+                in_channels += S ** 2
+            else:
+                in_channels += I ** 2
+        self.root = Sum(in_channels=in_channels, in_features=1, out_channels=C)
+
+    def init_weights(self):
+        for module in self.modules():
+            if hasattr(module, "_init_weights"):
+                module._init_weights()
+
+            if type(module) == Sum:
+                truncated_normal_(module.sum_weights)
 
     def forward(self, x):
         """Computes the posterior probabilities P(X | C) for each class."""
-        x = [spn(x) for spn in self.spns]
-        x = [res.squeeze(1) for res in x]
-        x = torch.stack(x, dim=1)
+        # Go over all regions
+        split_results = []
+        for spn in self.region_spns:
+            split_results.append(spn(x).squeeze(1))
+
+        x = torch.stack(split_results, dim=1)
 
         # Merge results from the different SPN into the channel dimension
         x = x.view(x.shape[0], 1, -1)
 
         # Apply C sum node outputs
-        x = self._root(x)
+        x = self.root(x)
         x = x.squeeze(1)
+        return x
 
-        # Compute P(C | X) = P(X | C) * P(C) / Z
-        # where Z = sum_i { P(X | C = c_i) * P(C = C_i) }
-        # and P(X | C) is the output of the root
-        z = torch.logsumexp(x + self._priors, dim=1).unsqueeze(-1)
 
-        # Posterior in log domain
-        # logP(C | X) = logP(X | C) + logP(C) - logsumexp(logP(X | C) + logP(C))
-        posteriors = x + self._priors - z
-        return posteriors
-
-    def __repr__(self):
-        spns_str = ""
-        for i in range(len(self.spns)):
-            spns_str += f"(Split-{i}): {self.spns[i]}\n"
-
-        return f"RatSpn(C={self.C}, spns=\n{spns_str})"
+def truncated_normal_(tensor, mean=0, std=1):
+    """
+    Truncated normal from https://discuss.pytorch.org/t/implementing-truncated-normal-initializer/4778/15
+    """
+    size = tensor.shape
+    tmp = tensor.new_empty(size + (4,)).normal_()
+    valid = (tmp < 2) & (tmp > -2)
+    ind = valid.max(-1, keepdim=True)[1]
+    tensor.data.copy_(tmp.gather(-1, ind).squeeze(-1))
+    tensor.data.mul_(std).add_(mean)
 
 
 if __name__ == "__main__":
-    # rg = region_graph.RegionGraph(range(20))
-    # for _ in range(0, 3):
-    #     rg.random_split(2, 2)
-    # args = RAT_SPN.SpnArgs()
-    # args.normalized_sums = True
-    # args.num_sums = 2
-    # args.num_gauss = 2
-    d = 128
-    b = 64
-    rg = RatSpnConstructor(in_features=d, C=10, S=2, I=2, dropout=0.1)
-    for i in range(10):
+    d = 12
+    b = 5
+    rg = RatSpnConstructor(in_features=d, C=2, S=2, I=2, dropout=0.0)
+    for i in range(2):
         rg.random_split(2, 2)
     rat = rg.build()
     import torch
 
     x = torch.randn(b, d)
     x = rat(x)
-    print(x)
-    print(x.exp())
-    print(x.exp().sum(1))
-    print(x.shape)
+    print("x", x)
+    print("x shape", x.shape)

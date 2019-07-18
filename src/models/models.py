@@ -6,6 +6,7 @@ Main models:
 - SPNNeuron: Defines the SPN architecture of a single neuron in a SPNLayer
 """
 import logging
+import time
 
 import numpy as np
 import torch
@@ -18,6 +19,7 @@ from src.models.resnet import resnet18, resnet34, resnet50, resnet101, resnet152
 from src.spn.distributions import Normal
 from src.spn import layers
 from src.utils.utils import count_params
+from src.utils.utils import time_delta_now
 
 logger = logging.getLogger(__name__)
 
@@ -46,11 +48,17 @@ class SPNNeuronShallow(nn.Module):
         self.in_features = in_features
 
         self.gauss = Normal(multiplicity=3, in_features=in_features)
-        self.prod = layers.Product(in_features=128, cardinality=2, randomize=True)
+        self.prod = layers.Product(in_features=128, cardinality=2)
         self.sum = layers.Sum(in_channels=3, in_features=64, out_channels=1)
-        self.out = layers.Product(in_features=64, cardinality=64, randomize=True)
+        self.out = layers.Product(in_features=64, cardinality=64)
+
+        # Randomize features
+        self.rand_idxs = torch.tensor(np.random.permutation(in_features))
 
     def forward(self, x):
+        # Random permutation
+        x = x[:, self.rand_idxs]
+
         x = self.gauss(x)
         x = self.prod(x)
         x = self.sum(x)
@@ -84,19 +92,19 @@ class SPNNeuronBig(nn.Module):
         #     layers.Sum(
         #         in_channels=n_gaussians, in_features=in_features, out_channels=ch[0]
         #     ),
-        #     layers.Product(in_features=in_features, cardinality=2, randomize=True),
+        #     layers.Product(in_features=in_features, cardinality=2),
         #     layers.Sum(
         #         in_channels=ch[0], in_features=in_features / 2, out_channels=ch[1]
         #     ),
-        #     layers.Product(in_features=in_features / 2, cardinality=2, randomize=True),
+        #     layers.Product(in_features=in_features / 2, cardinality=2),
         #     layers.Sum(
         #         in_channels=ch[1], in_features=in_features / 4, out_channels=ch[2]
         #     ),
-        #     layers.Product(in_features=in_features / 4, cardinality=2, randomize=True),
+        #     layers.Product(in_features=in_features / 4, cardinality=2),
         #     layers.Sum(
         #         in_channels=ch[2], in_features=in_features / 8, out_channels=ch[3]
         #     ),
-        #     layers.Product(in_features=in_features / 8, cardinality=2, randomize=True),
+        #     layers.Product(in_features=in_features / 8, cardinality=2),
         #     layers.Sum(in_channels=ch[3], in_features=in_features / 16, out_channels=1),
         #     layers.Product(in_features=in_features / 16, cardinality=in_features // 16),
         # )
@@ -108,25 +116,19 @@ class SPNNeuronBig(nn.Module):
             layers.Sum(
                 in_channels=n_gaussians, in_features=in_features, out_channels=ch[0]
             ),
-            layers.Product(in_features=in_features, cardinality=card, randomize=True),
+            layers.Product(in_features=in_features, cardinality=card),
             layers.Sum(
                 in_channels=ch[0], in_features=in_features / 5, out_channels=ch[1]
             ),
-            layers.Product(
-                in_features=in_features / 5, cardinality=card, randomize=True
-            ),
+            layers.Product(in_features=in_features / 5, cardinality=card),
             layers.Sum(
                 in_channels=ch[1], in_features=in_features / 5 ** 2, out_channels=ch[2]
             ),
-            layers.Product(
-                in_features=in_features / 5 ** 2, cardinality=card, randomize=True
-            ),
+            layers.Product(in_features=in_features / 5 ** 2, cardinality=card),
             layers.Sum(
                 in_channels=ch[2], in_features=in_features / 5 ** 3, out_channels=ch[3]
             ),
-            layers.Product(
-                in_features=in_features / 5 ** 3, cardinality=card, randomize=True
-            ),
+            layers.Product(in_features=in_features / 5 ** 3, cardinality=card),
             layers.Sum(
                 in_channels=ch[3], in_features=in_features / 5 ** 4, out_channels=1
             ),
@@ -135,8 +137,11 @@ class SPNNeuronBig(nn.Module):
             ),
         )
 
+        # Randomize features
+        self.rand_idxs = torch.tensor(np.random.permutation(in_features))
+
     def forward(self, x):
-        x = x.view(x.shape[0], 1, -1)
+        x = x[:, self.rand_idxs]
         x = self.spn(x)
         return x
 
@@ -376,7 +381,7 @@ class SPNNeuronBig(nn.Module):
 ##########
 
 
-class SPNPosteriorLayer(nn.Module):
+class SPNOutLayer(nn.Module):
     """
     A PyTorch module that contains multiple SPNs with the same structure and treats them as single nodes in a layer.
     """
@@ -398,7 +403,6 @@ class SPNPosteriorLayer(nn.Module):
             torch.log(torch.ones(n_labels) / n_labels), requires_grad=False
         )
         self.n_labels = n_labels
-        # self.class_distribution = nn.Parameter(torch.ones(n_labels) / n_labels)
 
     def forward(self, x):
         # Feed forward each neuron and stack the results
@@ -411,7 +415,7 @@ class SPNPosteriorLayer(nn.Module):
         # w_i = 1/n_labels
         z = torch.logsumexp(self.class_weights_log + x, dim=1).view(x.shape[0], 1)
         y = x + self.class_weights_log - z
-        return y
+        return x
 
 
 class SPNLayer(nn.Module):
@@ -449,7 +453,7 @@ class SPNLayer(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, in_features, n_labels, resnet_arch=resnet18):
+    def __init__(self, in_features, n_labels, resnet_arch=resnet18, in_channels=1):
         """
         Resnet.
         Args:
@@ -460,7 +464,9 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
 
         self.n_labels = n_labels
-        self.resnet = resnet_arch(pretrained=False, num_classes=128, in_channels=1)
+        self.resnet = resnet_arch(
+            pretrained=False, num_classes=128, in_channels=in_channels
+        )
         self.linear = nn.Linear(128, n_labels)
         for m in self.modules():
             if isinstance(m, nn.Linear):
@@ -475,6 +481,37 @@ class ResNet(nn.Module):
         x = F.relu(self.resnet(x))
         x = self.linear(x)
         return x.sigmoid()
+
+
+class ResNetCifar10(nn.Module):
+    def __init__(self, in_features, n_labels, resnet_arch=resnet18, in_channels=3):
+        """
+        Resnet.
+        Args:
+            in_features: Number of input features.
+            n_labels: Number of output labels.
+            resnet_arch: Resnet architecture.
+        """
+        super().__init__()
+
+        self.n_labels = n_labels
+        self.resnet = resnet_arch(
+            pretrained=False, num_classes=128, in_channels=in_channels
+        )
+        self.linear = nn.Linear(128, n_labels)
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                torch.nn.init.kaiming_normal_(m.weight)
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Conv2d):
+                nn.init.xavier_normal_(m.weight)
+
+    def forward(self, x):
+        x = F.relu(self.resnet(x))
+        x = self.linear(x)
+        return x
 
 
 # class SPNResnetParallel(nn.Module):
@@ -526,14 +563,6 @@ class SPNNetPure(nn.Module):
         self.mid = SPNLayer(
             neuron=spnneuron, in_features=in_features, out_features=n_labels
         )
-        for m in self.modules():
-            if isinstance(m, nn.Linear):
-                torch.nn.init.kaiming_normal_(m.weight)
-            elif isinstance(m, nn.BatchNorm2d):
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
-            elif isinstance(m, nn.Conv2d):
-                nn.init.xavier_normal_(m.weight)
 
     def forward(self, x):
         x = x.view(x.shape[0], -1)
@@ -543,7 +572,12 @@ class SPNNetPure(nn.Module):
 
 class SPNPosteriorNet(nn.Module):
     def __init__(
-        self, in_features, n_labels, resnet_arch=resnet18, spnneuron=SPNNeuronShallow
+        self,
+        in_features,
+        n_labels,
+        resnet_arch=resnet18,
+        spnneuron=SPNNeuronShallow,
+        in_channels=1,
     ):
         """
         Apply Resnet and SPN sequentially.
@@ -559,10 +593,10 @@ class SPNPosteriorNet(nn.Module):
         super().__init__()
 
         self.n_labels = n_labels
-        self.resnet = resnet_arch(pretrained=False, num_classes=128, in_channels=3)
-        self.mid = SPNPosteriorLayer(
-            neuron=spnneuron, in_features=128, n_labels=n_labels
+        self.resnet = resnet_arch(
+            pretrained=False, num_classes=128, in_channels=in_channels
         )
+        self.mid = SPNOutLayer(neuron=spnneuron, in_features=128, n_labels=n_labels)
         for m in self.modules():
             if isinstance(m, nn.Linear):
                 torch.nn.init.kaiming_normal_(m.weight)
@@ -580,7 +614,12 @@ class SPNPosteriorNet(nn.Module):
 
 class SPNNet(nn.Module):
     def __init__(
-        self, in_features, n_labels, resnet_arch=resnet18, spnneuron=SPNNeuronShallow
+        self,
+        in_features,
+        n_labels,
+        resnet_arch=resnet18,
+        spnneuron=SPNNeuronShallow,
+        in_channels=1,
     ):
         """
         Apply Resnet and SPN sequentially.
@@ -594,7 +633,9 @@ class SPNNet(nn.Module):
         super().__init__()
 
         self.n_labels = n_labels
-        self.resnet = resnet_arch(pretrained=False, num_classes=128, in_channels=1)
+        self.resnet = resnet_arch(
+            pretrained=False, num_classes=128, in_channels=in_channels
+        )
         self.mid = SPNLayer(neuron=spnneuron, in_features=128, out_features=n_labels)
         for m in self.modules():
             if isinstance(m, nn.Linear):
@@ -611,39 +652,49 @@ class SPNNet(nn.Module):
         return x.sigmoid()
 
 
-# class ConditionalSPNNet(nn.Module):
-#     def __init__(self, in_features, n_labels, resnet_arch=resnet18):
-#         """
-#         Apply Resnet and then conditional SPN as defined by the `ConditionalSPNNeuron`.
+class SPNNetCifar10(nn.Module):
+    def __init__(
+        self,
+        in_features,
+        n_labels,
+        resnet_arch=resnet18,
+        spnneuron=SPNNeuronShallow,
+        in_channels=3,
+    ):
+        """
+        Apply Resnet and SPN sequentially.
 
-#         Args:
-#             in_features: Number of input features.
-#             n_labels: Number of output labels.
-#             resnet_arch: Resnet architecture.
-#         """
-#         super(ConditionalSPNNet, self).__init__()
+        Args:
+            in_features: Number of input features.
+            n_labels: Number of output labels.
+            resnet_arch: Resnet architecture.
+            spnneuron: SPN neuron type that defines the SPN architecture.
+        """
+        super().__init__()
 
-#         self.n_labels = n_labels
-#         self.resnet = resnet_arch(pretrained=False, num_classes=128, in_channels=1)
-#         self.mid = ConditionalSPNNeuron(128)
-#         self.out = nn.Linear(128, n_labels)
-#         for m in self.modules():
-#             if isinstance(m, nn.Linear):
-#                 torch.nn.init.kaiming_normal_(m.weight)
-#             elif isinstance(m, nn.BatchNorm2d):
-#                 m.weight.data.fill_(1)
-#                 m.bias.data.zero_()
-#             elif isinstance(m, nn.Conv2d):
-#                 nn.init.xavier_normal_(m.weight)
+        self.n_labels = n_labels
+        self.resnet = resnet_arch(
+            pretrained=False, num_classes=128, in_channels=in_channels
+        )
+        self.mid = SPNOutLayer(neuron=spnneuron, in_features=128, n_labels=n_labels)
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                torch.nn.init.kaiming_normal_(m.weight)
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Conv2d):
+                nn.init.xavier_normal_(m.weight)
 
-#     def forward(self, x):
-#         x = F.relu(self.resnet(x))
-#         x = self.mid(x)
-#         x = self.out(x)
-#         return x.sigmoid()
+    def forward(self, x):
+        x = F.relu(self.resnet(x))
+        x = self.mid(x)
+        return x
 
 
-def get_model_by_tag(tag, device, args, in_features, n_labels) -> nn.Module:
+def get_model_by_tag(
+    tag, device, args, in_features, n_labels, in_channels=1
+) -> nn.Module:
     """
     Return the model for a given tag.
 
@@ -651,6 +702,9 @@ def get_model_by_tag(tag, device, args, in_features, n_labels) -> nn.Module:
         tag (str): Model tag.
         device: Device to create the model on.
         args: Arguments
+        in_features: Number of input features.
+        n_labels: Number of output labels.
+        in_channels: Number of input channels.
 
     Returns:
         nn.Module: PyTorch model.
@@ -669,11 +723,17 @@ def get_model_by_tag(tag, device, args, in_features, n_labels) -> nn.Module:
     # Select model
     if tag.lower() == "resnet+spn":
         model = SPNNet(
-            in_features=in_features, n_labels=n_labels, spnneuron=SPNNeuronShallow
+            in_features=in_features,
+            n_labels=n_labels,
+            spnneuron=SPNNeuronShallow,
+            in_channels=in_channels,
         ).to(device)
     elif tag.lower() == "resnet+posterior+spn":
         model = SPNPosteriorNet(
-            in_features=in_features, n_labels=n_labels, spnneuron=SPNNeuronShallow
+            in_features=in_features,
+            n_labels=n_labels,
+            spnneuron=SPNNeuronShallow,
+            in_channels=in_channels,
         ).to(device)
     elif tag.lower() == "spn-shallow":
         model = SPNNetPure(
@@ -685,36 +745,27 @@ def get_model_by_tag(tag, device, args, in_features, n_labels) -> nn.Module:
         ).to(device)
     elif tag.lower() == "resnet":
         model = ResNet(
-            in_features=in_features, n_labels=n_labels, resnet_arch=resnet_arch
+            in_features=in_features,
+            n_labels=n_labels,
+            resnet_arch=resnet_arch,
+            in_channels=in_channels,
+        ).to(device)
+    elif tag.lower() == "resnet-cifar10":
+        model = ResNetCifar10(
+            in_features=in_features,
+            n_labels=n_labels,
+            resnet_arch=resnet_arch,
+            in_channels=in_channels,
+        ).to(device)
+    elif tag.lower() == "resnet+spn-cifar10":
+        model = SPNNetCifar10(
+            in_features=in_features,
+            n_labels=n_labels,
+            spnneuron=SPNNeuronShallow,
+            in_channels=in_channels,
         ).to(device)
     else:
         raise Exception("Invalid network: %s" % tag)
-
-    # multi_gpu = len(args.cuda_device_id) > 1 or args.cuda_device_id[0] == -1
-
-    # # Check if multiple cuda devices are selected
-    # if multi_gpu:
-    #     logger.info("Using multiple gpus")
-    #     logger.info("args.cuda_device_id=%s", args.cuda_device_id)
-    #     num_cuda_devices = torch.cuda.device_count()
-
-    #     if args.cuda_device_id[0] == -1:
-    #         # Select all devices
-    #         cuda_device_id = list(range(num_cuda_devices))
-    #     else:
-    #         cuda_device_id = list(range(len(args.cuda_device_id)))
-
-    #     # Check if multiple cuda devices are available
-    #     if num_cuda_devices > 1:
-    #         logger.info("Running experiment on the following GPUs: %s", cuda_device_id)
-
-    #         # Transform model into data parallel model on all selected cuda deviecs
-    #         model = torch.nn.DataParallel(model, device_ids=cuda_device_id)
-    #     else:
-    #         logger.warning(
-    #             "Attempted to run the experiment on multiple GPUs while only %s GPU was available",
-    #             num_cuda_devices,
-    #         )
 
     return model
 
@@ -725,17 +776,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     args = parser.parse_args(args=[])
     args.resnet_arch = "resnet18"
-    resnet = get_model_by_tag("resnet", torch.device("cpu"), args, 50 ** 2, 10)
-    resnetspn = get_model_by_tag("resnet+spn", torch.device("cpu"), args, 50 ** 2, 10)
-    shallow = get_model_by_tag("spn-shallow", torch.device("cpu"), args, 50 ** 2, 10)
-    deep = get_model_by_tag("spn-deep", torch.device("cpu"), args, 50 ** 2, 10)
+    dev = "cuda:0"
+    resnet = get_model_by_tag("resnet", torch.device(dev), args, 50 ** 2, 10)
+    resnetspn = get_model_by_tag("resnet+spn", torch.device(dev), args, 50 ** 2, 10)
+    shallow = get_model_by_tag("spn-shallow", torch.device(dev), args, 50 ** 2, 10)
 
-    x = torch.rand(3, 1, 50, 50)
+    x = torch.rand(3, 1, 50, 50).to(torch.device(dev))
     for net, name in [
         (resnet, "resnet"),
         (resnetspn, "resnetspn"),
         (shallow, "shallow"),
-        (deep, "deep"),
     ]:
         print(f"{name}: {count_params(net)}")
+        t = time.time()
         net(x)
+        print(name, "took", time_delta_now(t))

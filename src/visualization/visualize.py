@@ -28,11 +28,11 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
 def plot_batch_sizes():
     base_dir_acc = os.path.join(args.run)
     plot_dir = plot_base_dir
     ensure_dir(plot_dir)
-
 
 
 def plot_accs_mnist_multilabel():
@@ -112,13 +112,15 @@ def plot_accs_mnist_multilabel():
         n_digits = run_args.n_digits
         batch_size = run_args.batch_size
         l2 = run_args.l2
+        lr = run_args.lr
 
     # Titles
-    title = "MNIST Multilabel ($N_{labels}=%s,N_{digits}=%s, bs=%s, l2=%s$)" % (
+    title = "MNIST Multilabel ($N_{labels}=%s,N_{digits}=%s, bs=%s, l2=%s, lr=%s$)" % (
         n_labels,
         n_digits,
         batch_size,
         l2,
+        lr,
     )
     fig.suptitle(title)
     # Shrink current axis's height by 10% on the bottom

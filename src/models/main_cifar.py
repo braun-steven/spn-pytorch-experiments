@@ -18,6 +18,8 @@ from src.data.data import store_results
 from src.data.data_loader import get_cifar_loader
 from src.utils.utils import get_n_samples_from_loader
 from src.utils.utils import set_cuda_device
+from src.utils.utils import generate_run_base_dir
+from src.utils.utils import generate_experiment_dir
 from src.models.models import get_model_by_tag
 from src.utils.args import init_argparser
 from src.utils.args import save_args
@@ -74,7 +76,7 @@ def evaluate(model: nn.Module, device: str, loader, tag: str) -> Tuple[float, fl
 
     loss = 0.0
     correct = 0
-    loss_fn = nn.NLLLoss(reduction="sum")
+    loss_fn = nn.CrossEntropyLoss(reduction="sum")
 
     with torch.no_grad():
         for data, target in loader:
@@ -119,8 +121,9 @@ def train(model, device, train_loader, optimizer, epoch, log_interval=10):
     dist_clipper = DistributionClipper(device)
 
     n_samples = get_n_samples_from_loader(train_loader)
-    loss_fn = nn.NLLLoss()
+    loss_fn = nn.CrossEntropyLoss()
     t_start = time.time()
+    running_loss = 0.0
     for batch_idx, (data, target) in enumerate(train_loader):
         # Send data to correct device
         data, target = data.to(device), target.to(device)
@@ -140,21 +143,23 @@ def train(model, device, train_loader, optimizer, epoch, log_interval=10):
         model.apply(dist_clipper)
 
         # Log stuff
-        if batch_idx % log_interval == 0:
+        running_loss += loss.item()
+        if batch_idx % log_interval == (log_interval - 1):
             logger.info(
                 "Train Epoch: {} [{: >5}/{: <5} ({:.0f}%)]\tLoss: {:.6f}".format(
                     epoch,
                     batch_idx * len(data),
                     n_samples,
                     100.0 * batch_idx / len(train_loader),
-                    loss.item(),
+                    running_loss / log_interval,
                 )
             )
+            running_loss = 0.0
     t_delta = time_delta_now(t_start)
     logger.info("Train Epoch: {} took {}".format(epoch, t_delta))
 
 
-def run_cifar(args):
+def run_cifar(args, exp_dir):
     """
     Run the experiment with a given percentage.
 
@@ -165,11 +170,10 @@ def run_cifar(args):
     Returns:
         Tuple[float, float, float, float]: Train acc, Test acc, Train loss, Test loss.
     """
-    use_cuda = args.cuda and torch.cuda.is_available()
     # Set seed globally
     set_seed(args.seed)
-    torch.manual_seed(args.seed)
-    cuda_device = "cuda:{}".format(args.cuda_device_id[0])
+    cuda_device = "cuda:{}".format(args.cuda_device_id)
+    use_cuda = args.cuda and torch.cuda.is_available()
     device = torch.device(cuda_device if use_cuda else "cpu")
 
     logger.info("Main device: %s", device)
@@ -182,7 +186,12 @@ def run_cifar(args):
 
     # Retreive model
     model = get_model_by_tag(
-        in_features=32 * 32, tag=args.net, device=device, args=args, n_labels=args.cifar
+        in_features=32 * 32,
+        tag=args.net,
+        device=device,
+        args=args,
+        n_labels=args.cifar,
+        in_channels=3,
     )
 
     # Disable track_running_stats in batchnorm according to
@@ -194,25 +203,19 @@ def run_cifar(args):
     logger.info("Number of paramters: %s", count_params(model))
 
     # Define optimizer
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.l2)
 
     # Scheduler for learning rate
     gamma = 0.5
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=gamma)
 
-    writer = SummaryWriter(log_dir=os.path.join(ARGS.result_dir, ARGS.experiment_name))
+    writer = SummaryWriter(log_dir=os.path.join(exp_dir, "tb-log"))
 
     data = []
     # Run epochs
     for epoch in range(1, args.epochs + 1):
         # Start counting after 10 epochs, that is, first lr reduction is at epoch 20
-        if epoch > 10:
-            logger.info(
-                "Epoch %s: Reducing learning rate by %s to %s",
-                epoch,
-                gamma,
-                optimizer.param_groups[0]["lr"],
-            )
+        if epoch > 20:
             scheduler.step()
 
         # Run train
@@ -251,16 +254,27 @@ def main():
     print("Log file: ", log_file)
 
     # Save commandline arguments
-    save_args(ARGS)
-
     tstart = time.time()
     try:
         if not ARGS.cuda:
             # Set number of CPU threads
             torch.set_num_threads(ARGS.njobs)
+        else:
+            ARGS.cuda_device_id = ARGS.cuda_device_id[0]
 
+        if ARGS.reuse_base_dir is not None:
+            base_dir = ARGS.reuse_base_dir
+        else:
+            base_dir = generate_run_base_dir(
+                suffix="debug",
+                experiment="multilabel-mnist",
+                result_dir=ARGS.result_dir,
+                timestamp=tstart,
+            )
+        exp_dir = generate_experiment_dir(base_dir, ARGS.net, "test")
+        save_args(ARGS, exp_dir)
         # Create and run experiment
-        run_cifar(ARGS)
+        run_cifar(ARGS, exp_dir)
     except Exception as e:
         logger.exception("Experiment crashed.")
         logger.exception("Exception: %s", str(e))
@@ -268,29 +282,6 @@ def main():
     # Measure time
     tstr = time_delta_now(tstart)
     logger.info(" -- CIFAR -- Finished, took %s", tstr)
-
-
-def plot_sample(x, y, y_pred, loss):
-    """
-    Plot a single sample witht the target and prediction in the title.
-
-    Args:
-        x: Image.
-        y: Target.
-        y_pred: Target prediction.
-        loss: Loss value.
-    """
-    import matplotlib.pyplot as plt
-
-    plt.imshow(x.squeeze().numpy())
-    plt.title(
-        "y={}\ny_pred={}\nloss={}".format(
-            y.squeeze().numpy(),
-            y_pred.squeeze().detach().numpy(),
-            loss.detach().numpy(),
-        )
-    )
-    plt.show()
 
 
 if __name__ == "__main__":
