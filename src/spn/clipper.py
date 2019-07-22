@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 
-LOWER_BOUND = torch.tensor(1e-5)
+LOWER_BOUND = torch.tensor(1e-1)
 
 
 class DistributionClipper(object):
@@ -47,32 +47,3 @@ class DistributionClipper(object):
             mult_times_ndist = param.shape[0]
             for m in range(mult_times_ndist):
                 param[m, :, :].diagonal().clamp_(self.lower_bound)
-
-
-class SumWeightClipper(object):
-    """
-    Clip sum weights > 0.
-    """
-
-    def __init__(self, device, lower_bound=1e-40):
-        """
-        Args:
-            device: Torch device.
-        """
-        self.lower_bound = torch.tensor(lower_bound).to(device)
-
-    def __call__(self, module):
-        if hasattr(module, "sum_weights"):
-            sum_weights = module.sum_weights.data
-            sum_weights.clamp_(self.lower_bound)
-
-
-class SumWeightNormalizer(object):
-    """
-    Normalize sum layer weights.
-    """
-
-    def __call__(self, module):
-        if hasattr(module, "sum_weights"):
-            sum_weights = module.sum_weights.data
-            F.normalize(sum_weights, p=1, dim=2, out=sum_weights)

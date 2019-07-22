@@ -17,8 +17,6 @@ from src.utils.utils import set_cuda_device
 from src.utils.utils import generate_experiment_dir
 from src.utils.utils import generate_run_base_dir
 from src.spn.clipper import DistributionClipper
-from src.spn.clipper import SumWeightNormalizer
-from src.spn.clipper import SumWeightClipper
 from src.utils.args import init_argparser
 from src.utils.args import save_args
 from src.utils.utils import (

@@ -7,8 +7,6 @@ from src.data.data_loader import get_mnist_loaders
 from src.utils.utils import time_delta_now
 from src.utils.utils import count_params
 from src.spn.clipper import DistributionClipper
-from src.spn.clipper import SumWeightNormalizer
-from src.spn.clipper import SumWeightClipper
 from src.spn.distributions import Normal
 from src.spn.distributions import IsotropicMultivariateNormal
 from src.spn.distributions import MultivariateNormal
@@ -103,13 +101,11 @@ def run_torch(n_epochs=100, batch_size=256):
 
     # Define optimizer
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=1e-2)
-    # optimizer = optim.SGD(model.parameters(), lr=1e-3, momentum=0.9)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
     train_loader, test_loader = get_mnist_loaders(
         use_cuda, batch_size=batch_size, device=device
     )
 
-    dist_clipper = DistributionClipper(device)
     log_interval = 100
 
     for epoch in range(n_epochs):
@@ -132,9 +128,6 @@ def run_torch(n_epochs=100, batch_size=256):
             # Backprop
             loss.backward()
             optimizer.step()
-
-            # Clip distribution values and weights
-            model.apply(dist_clipper)
 
             # Log stuff
             running_loss += loss.item()

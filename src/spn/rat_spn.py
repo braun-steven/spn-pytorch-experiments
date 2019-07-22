@@ -152,58 +152,6 @@ class RatSpnConstructor:
         )
 
         self._region_spns.append(spn)
-        # # Build the SPN top down:
-        # layers = []
-
-        # # Definition from RAT Paper
-        # # Leaf Region:      Create I leaf nodes
-        # # Root Region:      Create C sum nodes
-        # # Internal Region:  Create S sum nodes
-        # # Partition:        Cross products of all child-regions
-
-        # ### LEAF ###
-        # # Cardinality is the size of the region in the last partitions
-        # cardinality = np.ceil(self.in_features / (num_parts ** num_recursions)).astype(
-        #     int
-        # )
-        # leaf = IndependentNormal(
-        #     multiplicity=self.I,
-        #     in_features=self.in_features,
-        #     cardinality=cardinality,
-        #     dropout=self.dropout,
-        #     pad=num_parts ** num_recursions,
-        # )
-        # layers.append(leaf)
-
-        # prodlayer = RatProduct(in_features=num_parts ** num_recursions)
-        # layers.append(prodlayer)
-
-        # for i in np.arange(start=num_recursions - 1, stop=0, step=-1):
-        #     is_lowest_sum_layer = i == num_recursions - 1
-        #     if is_lowest_sum_layer:
-        #         # Output channels channels of product layer after leafs
-        #         sum_in_channels = self.I ** 2
-        #     else:
-        #         # Output channels of product layer after sums
-        #         sum_in_channels = self.S ** 2
-
-        #     in_features = num_parts ** i
-
-        #     ## SUM layer
-        #     sumlayer = Sum(
-        #         in_features=in_features,
-        #         in_channels=sum_in_channels,
-        #         out_channels=self.S,
-        #     )
-        #     layers.append(sumlayer)
-
-        #     prodlayer = RatProduct(in_features=in_features)
-        #     layers.append(prodlayer)
-
-        # # Define SPN by stacking the layers
-        # spn = nn.Sequential(*layers)
-        # spn.D = num_recursions
-        # self._spns.append(spn)
 
     def random_split(self, num_parts, num_recursions=1):
         """Randomly split the region graph.
@@ -300,12 +248,9 @@ class IndependentNormal(Leaf):
         self.cardinality = cardinality
         self.out_shape = f"(N, {self.prod._out_features}, {multiplicity})"
 
-        # Init weights
-        self._init_weights()
-
     def _init_weights(self):
         """Iniialize Normal weights with a truncated distribution."""
-        truncated_normal_(self.gauss.stds)
+        truncated_normal_(self.gauss.stds, std=0.5)
 
     def forward(self, x):
         x = self.gauss(x)
@@ -444,13 +389,17 @@ class RatSpn(nn.Module):
                 in_channels += I ** 2
         self.root = Sum(in_channels=in_channels, in_features=1, out_channels=C)
 
+        self.init_weights()
+
     def init_weights(self):
         for module in self.modules():
             if hasattr(module, "_init_weights"):
                 module._init_weights()
+                continue
 
             if type(module) == Sum:
-                truncated_normal_(module.sum_weights)
+                truncated_normal_(module.sum_weights, std=0.5)
+                continue
 
     def forward(self, x):
         """Computes the posterior probabilities P(X | C) for each class."""
@@ -470,7 +419,7 @@ class RatSpn(nn.Module):
         return x
 
 
-def truncated_normal_(tensor, mean=0, std=1):
+def truncated_normal_(tensor, mean=0, std=0.1):
     """
     Truncated normal from https://discuss.pytorch.org/t/implementing-truncated-normal-initializer/4778/15
     """

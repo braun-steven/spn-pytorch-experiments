@@ -22,9 +22,7 @@ class Sum(nn.Module):
         )
         in_features = int(in_features)
         # Weights, such that each sumnode has its own weights
-        ws = torch.rand(1, in_features, in_channels, out_channels)
-        # Normalize over in_channel axis
-        F.normalize(ws, p=1, dim=2, out=ws)
+        ws = torch.randn(in_features, in_channels, out_channels)
         self.sum_weights = nn.Parameter(ws)
         self._bernoulli_dist = torch.distributions.Bernoulli(probs=dropout)
 
@@ -47,7 +45,7 @@ class Sum(nn.Module):
 
         # Multiply x with weights in logspace
         # Resuts in shape: [n, d, ic, oc]
-        x = x.unsqueeze(3) + F.log_softmax(self.sum_weights, dim=2)
+        x = x.unsqueeze(3) + F.log_softmax(self.sum_weights, dim=1)
 
         # Compute sum via logsumexp along dimension "ic" (in_channels)
         # Resuts in shape: [n, d, oc]
@@ -103,12 +101,12 @@ class Product(nn.Module):
 
         x_split = list(torch.split(x, self.cardinality, dim=1))
 
-        # Check if splits have the same shape (If split cannot be made even, the last chung will be smaller)
+        # Check if splits have the same shape (If split cannot be made even, the last chunk will be smaller)
         if x_split[-1].shape != x_split[0].shape:
             # How much is the last chunk smaller
             diff = x_split[0].shape[1] - x_split[-1].shape[1]
 
-            # Pad the last chung by the difference with zeros (=maginalized nodes)
+            # Pad the last chunk by the difference with zeros (=maginalized nodes)
             x_split[-1] = F.pad(
                 x_split[-1], pad=[0, 0, 0, diff], mode="constant", value=0.0
             )

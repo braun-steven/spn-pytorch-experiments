@@ -12,7 +12,7 @@ from torch import nn, optim
 from torch.nn import functional as F
 from torch import distributions as dist
 
-from src.spn.clipper import DistributionClipper, SumWeightNormalizer, SumWeightClipper
+from src.spn.clipper import DistributionClipper
 
 from src.data.data import store_results
 from src.data.data_loader import get_cifar_loader

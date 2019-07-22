@@ -67,7 +67,6 @@ class Leaf(nn.Module, ABC):
     def forward(self, x):
         # Apply dropout sampled from a bernoulli
         if self.dropout > 0.0:
-            __import__("ipdb").set_trace(context=13)
             bernoulli_dist = dist.Bernoulli(probs=self.dropout)
             x = x * bernoulli_dist.sample(x.shape)
         return x
@@ -386,80 +385,60 @@ class Poisson(Leaf):
 
 
 if __name__ == "__main__":
-
-    rate = 100
-    poisson = torch.distributions.Poisson(rate)
-
-    model = Poisson(1, in_features=1)
-
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-
-    for epoch in range(100):
-
-        model.train()
-
-        loss_fn = nn.NLLLoss()
-        for batch_idx in range(1000):
-            # Send data to correct device
-            data = poisson.sample([10]).view(-1, 1)
-
-            # Reset gradients
-            optimizer.zero_grad()
-
-            # Inference
-            output = model(data)
-
-            # Comput loss
-            loss = -1 * output.mean()
-
-            # Backprop
-            loss.backward()
-            optimizer.step()
-
-            # Log stuff
-            if batch_idx % 100 == 0:
-                print(
-                    "Train Epoch: {} [{: >5}/{: <5} ({:.0f}%)]\tLoss: {:.6f}".format(
-                        epoch,
-                        batch_idx * len(data),
-                        100 * 1000,
-                        100.0 * batch_idx / 1000,
-                        loss.item() / 100,
-                    )
-                )
-                print(model.rate)
-                # print(model.triangular.permute(0, 2, 1).matmul(model.triangular))
-
-        print(model.rate)
-
-    exit()
-    bs = 10
+    # Define the problem size
+    batch_size = 10
     n_features = 6
-    cardinality = 2
-    n_dists = n_features // cardinality
+
+    # How many different representations of that distribution
     multiplicity = 5
 
-    # loc = torch.randn(4)
-    # triang = torch.rand(4, 4).tril_()
-    # cov = triang.t().matmul(triang)
-    loc = torch.tensor([1.0, 0.5])
-    # cov = torch.tensor([[1.0, 0.7], [0.7, 2.0]])
-    triang = torch.tensor([[1.0, 0.0], [0.7, 2.0]])
-    mv = dist.MultivariateNormal(loc=loc, scale_tril=triang)
-    # mv = dist.MultivariateNormal(loc=loc, covariance_matrix=cov)
+    # Create MV distribution to sample from
+    loc1 = torch.rand(n_features // 2)
+    loc2 = torch.rand(n_features // 2)
+    locs = [loc1, loc2]
+    triang1 = torch.tril(torch.rand(n_features // 2, n_features // 2))
+    triang2 = torch.tril(torch.rand(n_features // 2, n_features // 2))
+    triangs = [triang1, triang2]
+    mv1 = dist.MultivariateNormal(loc=loc1, scale_tril=triang1)
+    mv2 = dist.MultivariateNormal(loc=loc2, scale_tril=triang2)
 
-    model = MultivariateNormal(multiplicity=10, in_features=2, cardinality=2)
+    # Multivariate normal layer for SPNs
+    model = MultivariateNormal(
+        multiplicity=multiplicity, in_features=n_features, cardinality=n_features // 2
+    )
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    # Use SGD
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
+    def print_true_error(i):
+        print(
+            f"Squared error on means [{i}] :",
+            torch.pow(
+                model.means.view(multiplicity, model._n_dists, -1)[:, i, :] - locs[i], 2
+            )
+            .sum()
+            .item(),
+        )
+        print(
+            f"Squared error on tril [{i}] : ",
+            torch.pow(
+                model.triangular.view(multiplicity, model._n_dists, 3, 3)[:, i, :, :]
+                - triangs[i].view(1, 3, 3),
+                2,
+            )
+            .sum()
+            .item(),
+        )
+
+    # Train for 100 epochs
     for epoch in range(100):
-
-        model.train()
 
         loss_fn = nn.NLLLoss()
         for batch_idx in range(1000):
             # Send data to correct device
-            data = mv.sample([10])
+            data1, data2 = mv1.sample([batch_size]), mv2.sample([batch_size])
+
+            data = torch.stack([data1, data2], 1)
 
             # Reset gradients
             optimizer.zero_grad()
@@ -485,8 +464,5 @@ if __name__ == "__main__":
                         loss.item() / 100,
                     )
                 )
-                print(model.means)
-                # print(model.triangular.permute(0, 2, 1).matmul(model.triangular))
-                print(model.triangular)
-
-        print(model.means)
+                print_true_error(0)
+                print_true_error(1)
