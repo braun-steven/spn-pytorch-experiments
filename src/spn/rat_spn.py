@@ -254,6 +254,7 @@ class IndependentNormal(Leaf):
 
     def forward(self, x):
         x = self.gauss(x)
+        x = torch.where(~torch.isnan(x), x, torch.Tensor([0]))
         x = self.prod(x)
         return x
 
@@ -431,16 +432,22 @@ def truncated_normal_(tensor, mean=0, std=0.1):
     tensor.data.mul_(std).add_(mean)
 
 
-if __name__ == "__main__":
-    d = 12
-    b = 5
-    rg = RatSpnConstructor(in_features=d, C=2, S=2, I=2, dropout=0.0)
+def make_rat(num_features, classes, leaves=10, sums=10, num_splits=10, dropout=0.0):
+    rg = RatSpnConstructor(num_features, classes, sums, leaves, dropout=dropout)
     for i in range(2):
-        rg.random_split(2, 2)
+        rg.random_split(2, num_splits)
     rat = rg.build()
+    return rat
+
+
+if __name__ == "__main__":
+    b = 200
+    d = 50
+    rat = make_rat(b, 10, num_splits=4)
     import torch
 
-    x = torch.randn(b, d)
+    x = torch.randn(d, b)
     x = rat(x)
-    print("x", x)
+    x_norm = torch.logsumexp(x, 1).unsqueeze(1)
+    print("x", torch.exp(x - x_norm))
     print("x shape", x.shape)
