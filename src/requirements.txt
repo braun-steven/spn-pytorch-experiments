@@ -11,6 +11,6 @@ joblib==0.13.2
 observations==0.1.4
 skimage==0.0
 scikit_learn==0.21.2
-tensorflow==1.14.0
+tensorflow==2.3.1
 torchsummary==1.5.1
 torchvision==0.3.0
